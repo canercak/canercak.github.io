@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | My Octopress Blog]]></title>
+  <link href="http://canercak.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://canercak.github.io/"/>
+  <updated>2014-04-01T23:32:21+03:00</updated>
+  <id>http://canercak.github.io/</id>
+  <author>
+    <name><![CDATA[Your Name]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Two Factor Authentication Using Active_model_otp With Mongoid]]></title>
+    <link href="http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/"/>
+    <updated>2011-07-03T05:59:00+03:00</updated>
+    <id>http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
+    <content type="html"><![CDATA[<p>xxxxxxxxx
+yyyyyyyyyyy</p>
+]]></content>
+  </entry>
+  
+</feed>
