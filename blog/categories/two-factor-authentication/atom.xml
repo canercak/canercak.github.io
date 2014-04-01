@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Two Factor Authentication | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/two-factor-authentication/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-01T23:32:21+03:00</updated>
+  <updated>2014-04-02T02:56:21+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -20,6 +20,16 @@
     <id>http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
     <content type="html"><![CDATA[<p>xxxxxxxxx
 yyyyyyyyyyy</p>
+
+<p>``` ruby Source Article
+class Fixnum
+  def prime?</p>
+
+<pre><code>('1' * self) !~ /^1?$|^(11+?)\1+$/
+</code></pre>
+
+<p>  end
+end</p>
 ]]></content>
   </entry>
   
