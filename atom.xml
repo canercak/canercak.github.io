@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-02T02:56:21+03:00</updated>
+  <updated>2014-04-02T02:57:22+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -21,15 +21,18 @@
     <content type="html"><![CDATA[<p>xxxxxxxxx
 yyyyyyyyyyy</p>
 
-<p>&#8220;` ruby Source Article
-class Fixnum
-  def prime?</p>
+<figure class='code'><figcaption><span>Source Article</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">prime?</span>
+</span><span class='line'>    <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>('1' * self) !~ /^1?$|^(11+?)\1+$/
-</code></pre>
-
-<p>  end
-end</p>
 ]]></content>
   </entry>
   
