@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-02T03:04:14+03:00</updated>
+  <updated>2014-04-02T03:05:43+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -73,7 +73,7 @@ if session[:mobile_verified] = true
   session[:mobile_verified] = false
 end</p>
 
-<p>``` haml Source Article
+<p>``` haml Coffeescript
 = bootstrap_form_for @provider, id: @provider.id,  validate: true  do |f|
   .span{style: &lsquo;text-align: center&rsquo;}</p>
 
@@ -94,9 +94,8 @@ end</p>
 
 <p>```</p>
 
-<p>``` coffeescript Source Article</p>
-
-<p>$(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
+<p>``` coffeescript Coffeescript
+$(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
 if $(this).val().length is 6 #second clientside validation
   data = undefined
   $.ajax</p>

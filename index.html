@@ -199,7 +199,7 @@ class User include Mongoid::Document ... include ActiveModel::OneTimePassword &h
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> haml Source Article
+<p> haml Coffeescript
 = bootstrap_form_for @provider, id: @provider.id,  validate: true  do |f|
   .span{style: &lsquo;text-align: center&rsquo;}</p>
 
@@ -223,9 +223,8 @@ class User include Mongoid::Document ... include ActiveModel::OneTimePassword &h
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> coffeescript Source Article</p>
-
-<p>$(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
+<p> coffeescript Coffeescript
+$(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
 if $(this).val().length is 6 #second clientside validation
   data = undefined
   $.ajax</p>
