@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Two Factor Authentication | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/two-factor-authentication/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-03T04:09:14+03:00</updated>
+  <updated>2014-04-03T04:13:03+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,7 +18,7 @@
     <link href="http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/"/>
     <updated>2011-07-03T05:59:00+03:00</updated>
     <id>http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
-    <content type="html"><![CDATA[<p><code>ruby
+    <content type="html"><![CDATA[<p><code>ruby Source Article
 require "active_model_otp"
 class User
   include Mongoid::Document
@@ -31,7 +31,7 @@ class User
   field :otp_secret_key
 </code></p>
 
-<p>``` ruby
+<p>``` ruby Source Article
 def check_verification_code</p>
 
 <pre><code>data = {:result =&gt; false}
@@ -73,7 +73,7 @@ if session[:mobile_verified] = true
   session[:mobile_verified] = false
 end</p>
 
-<p>``` haml
+<p>``` haml Source Article
 = bootstrap_form_for @provider, id: @provider.id,  validate: true  do |f|
   .span{style: &lsquo;text-align: center&rsquo;}</p>
 
@@ -94,7 +94,7 @@ end</p>
 
 <p>```</p>
 
-<p>``` coffeescript
+<p>``` coffeescript Source Article
 $(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
 if $(this).val().length is 6 #second clientside validation
   data = undefined
