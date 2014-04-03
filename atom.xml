@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-02T03:05:43+03:00</updated>
+  <updated>2014-04-03T04:09:14+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,7 +18,7 @@
     <link href="http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/"/>
     <updated>2011-07-03T05:59:00+03:00</updated>
     <id>http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
-    <content type="html"><![CDATA[<figure class='code'><figcaption><span>Source Article</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+    <content type="html"><![CDATA[<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -43,7 +43,7 @@
 
 
 
-<figure class='code'><figcaption><span>Source Article</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -112,7 +112,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> haml Coffeescript
+<p> haml
 = bootstrap_form_for @provider, id: @provider.id,  validate: true  do |f|
   .span{style: &lsquo;text-align: center&rsquo;}</p>
 
@@ -131,12 +131,12 @@
   = f.label :success_label, class: 'control-label', id: 'success_code_label' 
 </code></pre>
 
-<figure class='code'><figcaption><span>Source Article</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> coffeescript Coffeescript
+<p> coffeescript
 $(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;>
 if $(this).val().length is 6 #second clientside validation
   data = undefined
