@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Two Factor Authentication | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/two-factor-authentication/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-03T04:36:33+03:00</updated>
+  <updated>2014-04-07T00:15:07+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,218 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Creating Activity Cal-heatmap Using Public_activity and Mongoid]]></title>
+    <link href="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/"/>
+    <updated>2013-08-02T16:52:00+03:00</updated>
+    <id>http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid</id>
+    <content type="html"><![CDATA[<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
+First thought of creating an activity stream but knew that the users won&rsquo;t be
+reading them since the activity would be about the services of the provider- not something &ldquo;social&rdquo;.
+Then thought of creating a line graph that shows the days and works done by the provider. It wouldn&rsquo;t be unique though.
+I thought and thought by looking at my github dashboard and idea came up. I always liked Github&rsquo;s collaboration heatmap.
+It was unique and concise. So I decided to create my own activity heatmap.</p>
+
+<p>I needed to sort out three things in order to make it happen.</p>
+
+<p>Finding out a github-like heatmap to present activities
+Logging provider activites in a way that I can present on map
+Making mongoid and Rails 4 work with heatmap and activity logs.</p>
+
+<p>Here is how I created my activity heatmap:</p>
+
+<p>Kamisama has done great job on creating cal-heatmaps. Its obvious that github uses his work too. You can find his work on
+<a href="https://github.com/kamisama/cal-heatmap.">https://github.com/kamisama/cal-heatmap.</a> You have to download cal-heatmap.js, d3.js and for localisation; moment.js does great job.
+I had to present three activites to user;</p>
+
+<p>When provider gets selected by user.
+When provider returns to quote
+When provider does the work</p>
+
+<p>You cannot divide the activities to parts in cal-heatmap.
+You provide timestamps with numeric values and cal-heatmap shows the data.
+So I first had to fetch these three activities, count them and show them on map.
+Then I would present the details once the user clicks on a cell.
+So &ldquo;get_provider_counts&rdquo; counts the data in a way cal-heatmap understands,
+&ldquo;get_activity gets&rdquo; the data once I click on a cell.</p>
+
+<p>``` coffeescript providers.js.coffee</p>
+
+<p>initProviderShow = &ndash;>
+  $.ajax(</p>
+
+<pre><code>url: "/activities/get_provider_counts"
+type: "GET"
+data:
+  id: $("#provider_id").val()
+dataType: "json"
+).success (data) -&gt; 
+moment.lang "fr"
+calendar = new CalHeatMap()
+calendar.init
+  itemSelector: "#calheat"
+  data: data
+  start: new Date(2014, 1)
+  domain: "month"
+  subDomain: "day"
+  range: 7
+  cellSize: 15
+  cellPadding: 5
+  domainGutter: 20
+  displayScale: false
+  previousSelector: "#calheat-PreviousDomain-selector"
+  nextSelector: "#calheat-NextDomain-selector"
+  domainLabelFormat: (date) -&gt;
+    moment(date).format("MMMM")
+  subDomainDateFormat: (date) -&gt;
+    moment(date).format "LL"
+  subDomainTitleFormat:
+    empty: "{date} +I18n.t "shared.navbar.no_activites"
+    filled: "{date}  {count} +I18n.t "shared.navbar.has_activites"
+  onClick: (date) -&gt;
+    $.ajax
+      type: "GET"
+      url: "/activities/get_activity"
+      data: { id: $("#provider_id").val(), selected: date}
+      success: (data) -&gt;
+        text1= ""
+        text2 =""
+        text3 = ""
+        if data.selected &gt; 0
+          text1 = data.selected + " " +I18n.t "shared.navbar.selected
+        if data.returned &gt; 0
+          text2 = data.returned + " " +I18n.t "shared.navbar.returned
+        if data.done &gt; 0
+          text3 = data.done + " " + I18n.t "shared.navbar.done"
+        if text1.length &gt; 0 || text2.length &gt; 0 || text3.length &gt; 0
+          $("#onClick-placeholder").html text1 + "&lt;br/&gt;" + text2 + "&lt;br/&gt;" + text3
+          $("#onClick-placeholder").show()
+        else
+          $("#onClick-placeholder").html ""
+          $("#onClick-placeholder").hide()              
+      error: (data) -&gt;
+          return
+    return
+  legend: [
+    1
+    3
+    5
+  ]
+  legendColors: [
+    "#ecf5e2"
+    "#232181"
+  ]
+</code></pre>
+
+<p>  return
+```</p>
+
+<p>I was about to store provider activities myself but then found a great gem to sort it out.
+Its public_activity gem. <a href="https://github.com/pokonski/public_activity">https://github.com/pokonski/public_activity</a>
+It&rsquo;s quote comprehensve and does support mongoid and Rails 4.</p>
+
+<p>The system I&rsquo;m working on is about User creating quotes to providers.
+For every quote user selects up to three providers. Provider &ldquo;returns&rdquo; back to quote and
+if agrees with user, provider &ldquo;does&rdquo; the work.
+So I&rsquo;m tracking the user, relation to providers collection, returned providers and providerdone.</p>
+
+<p>``` ruby Quote.rb
+require &lsquo;autoinc&rsquo;
+class Quote
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include Mongoid::Paranoia
+  include Mongoid::Slug
+  include Mongoid::Autoinc
+  include Geocoder::Model::Mongoid
+  include Concerns::GmapRoute
+  include PublicActivity::Model
+  tracked :owner => :user
+  tracked :params => {</p>
+
+<pre><code>  :returned_providers =&gt; :returned_providers,
+  :providerdone =&gt; :providerdone,
+  :providers =&gt; :provider_ids  
+</code></pre>
+
+<p>  }
+```</p>
+
+<p>I created a controller to store activities. Our system does not have activity streams
+so this will be useful for new features too.
+These two methods are for ajax requests I explained above.</p>
+
+<p>``` ruby activities_controller.rb
+def get_provider_counts</p>
+
+<pre><code>@provider = Provider.find(params[:id])
+@activities = PublicActivity::Activity.all 
+selected_providers =@activities.where("parameters.providers"=&gt;@provider._id,"key"=&gt;"quote.create").group_by {|d| d.created_at.to_i}
+returned_providers =@activities.where("parameters.returned_providers"=&gt;"#{@provider._id}","key"=&gt;"quote.update").group_by {|d| d.created_at.to_i}
+done_providers =@activities.where("parameters.providerdone"=&gt;"#{@provider._id}","key"=&gt;"quote.update").group_by {|d| d.created_at.to_i}
+@caldata = {}
+seldata = {}
+retdata ={}
+donedata = {}
+selected_providers.each do |provider|
+  seldata = {"#{provider[0]}" =&gt; provider[1].count}
+end
+returned_providers.each do |provider|
+  retdata = {"#{provider[0]}" =&gt; provider[1].count}
+end
+done_providers.each do |provider|
+  donedata = {"#{provider[0]}" =&gt; provider[1].count}
+end    
+@caldata = donedata.merge(retdata) {|key, oldval, newval| newval + oldval}
+@caldata = @caldata.merge(seldata) {|key, oldval, newval| newval + oldval}
+respond_to do |format|
+  format.json  { render :json =&gt; @caldata.to_json}
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  def get_activity</p>
+
+<pre><code>@provider = Provider.find(params[:id])
+date = Date.parse(params[:selected])
+@activities = PublicActivity::Activity.all 
+selected_providers =@activities.where("parameters.providers"=&gt;@provider._id,:created_at=&gt;date.beginning_of_day..date.end_of_day, "key"=&gt;"quote.create")
+returned_providers =@activities.where("parameters.returned_providers"=&gt;"#{@provider._id}",:created_at=&gt;date.beginning_of_day..date.end_of_day,"key"=&gt;"quote.update") 
+done_providers =@activities.where("parameters.providerdone"=&gt;"#{@provider._id}",:created_at=&gt;date.beginning_of_day..date.end_of_day,"key"=&gt;"quote.update") 
+respond_to do |format|
+  format.json  { render :json =&gt; {:selected=&gt; selected_providers.count,:returned =&gt;returned_providers.count,:done=&gt;done_providers.count}}
+end
+</code></pre>
+
+<p>  end
+```
+Finally the view to show cal-heatmap</p>
+
+<p>``` haml providers/show.html.haml</p>
+
+<p>%div
+  #calheat{style: &ldquo;position:relative;&rdquo;}
+  %p
+  %button#calheat-PreviousDomain-selector.btn.btn-mini</p>
+
+<pre><code>%i.icon.icon-chevron-left
+</code></pre>
+
+<p>  %button#calheat-NextDomain-selector.btn.btn-mini</p>
+
+<pre><code>%i.icon.icon-chevron-right
+</code></pre>
+
+<p>  %h5{style:&ldquo;text-align: center;margin-top: -10px;&rdquo;}</p>
+
+<pre><code>#onClick-placeholder
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Two Factor Authentication Using Active_model_otp With Mongoid]]></title>

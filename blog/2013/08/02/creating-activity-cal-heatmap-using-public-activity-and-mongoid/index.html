@@ -1,24 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
-  <link href="http://canercak.github.io/atom.xml" rel="self"/>
-  <link href="http://canercak.github.io/"/>
-  <updated>2014-04-07T00:15:07+03:00</updated>
-  <id>http://canercak.github.io/</id>
-  <author>
-    <name><![CDATA[Your Name]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Creating Activity Cal-heatmap Using Public_activity and Mongoid - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
 
   
-  <entry>
-    <title type="html"><![CDATA[Creating Activity Cal-heatmap Using Public_activity and Mongoid]]></title>
-    <link href="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/"/>
-    <updated>2013-08-02T16:52:00+03:00</updated>
-    <id>http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid</id>
-    <content type="html"><![CDATA[<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
+  <meta name="description" content="I had to present activites of a service provider to it&rsquo;s users in a unique way.
+First thought of creating an activity stream but knew that the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:canercak.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Creating Activity Cal-heatmap Using Public_activity and Mongoid</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T16:52:00+03:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
 First thought of creating an activity stream but knew that the users won&rsquo;t be
 reading them since the activity would be about the services of the provider- not something &ldquo;social&rdquo;.
 Then thought of creating a line graph that shows the days and works done by the provider. It wouldn&rsquo;t be unique though.
@@ -329,56 +403,114 @@ Finally the view to show cal-heatmap</p>
 
 
 <p></p>
-]]></content>
-  </entry>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Two Factor Authentication Using Active_model_otp With Mongoid]]></title>
-    <link href="http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/"/>
-    <updated>2011-07-03T05:59:00+03:00</updated>
-    <id>http://canercak.github.io/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
-    <content type="html"><![CDATA[<p>I had to implement two factor authentication using a custom sms provider.
-Active model OTP really helped me in generating one time use tokens.
-I thought it won&rsquo;t be working with mongoid but it was easy to integrate it.
-Another issue was to make user authenticated on the same page.
-We just didn&rsquo;t want to direct user to another page for phone verification.
-So I&rsquo;ve written some js to sort it out. It&rsquo;s a bit &ldquo;manual&rdquo; because clientsidevalidations caused problems in Rails4.
-Everything gets validated both on client and server side.
-Here you can see relevant parts from the code.</p>
 
-<div><script src='https://gist.github.com/9946621.js'></script>
-<noscript><pre><code>def check_verification_code
-      data = {:result =&gt; false}
-      if current_user.authenticate_otp(params[:verification_code], drift: 200) #drift enough for old users 
-        data = {:result =&gt; true}
-        session[:mobile_verified] = true
-      end
-      respond_to do |format|
-        format.json  { render :json =&gt; data} 
-      end
-    end
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
 
-
-    def sendverification
-      data = {:result =&gt; false} 
-      phone = validate_phone(params[:verification_phone])
-      if phone.present?
-        sms = Sms.new       
-        if sms.send_sms([phone],APP_CONFIG.sms_from, t(&#39;verification_message&#39;) + current_user.otp_code.to_s)
-          data = {:result =&gt; true} 
-        end
-      end
-      respond_to do |format|
-        format.json  { render :json =&gt; data} 
-      end
-    end
-
-
-</code></pre></noscript></div>
+      
 
 
 
-]]></content>
-  </entry>
+
+
+
+
+
   
-</feed>
+
+
+<time datetime="2013-08-02T16:52:00+03:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mongoid/'>Mongoid</a>, <a class='category' href='/blog/categories/rails/'>Rails</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/two-factor-authentication/'>Two Factor Authentication</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/" data-via="" data-counturl="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/" title="Previous Post: Two factor authentication using active_model_otp with mongoid">&laquo; Two factor authentication using active_model_otp with mongoid</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/03/two-factor-authentication-using-active-model-otp-with-mongoid/">Two Factor Authentication Using Active_model_otp With Mongoid</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
