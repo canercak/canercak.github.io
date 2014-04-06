@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Caner's RoR blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-07T00:21:24+03:00</updated>
+  <updated>2014-04-07T00:38:08+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
-    
+    <name><![CDATA[Caner]]></name>
+    <email><![CDATA[canercak@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
@@ -18,7 +18,9 @@
     <link href="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/"/>
     <updated>2013-08-02T16:52:00+03:00</updated>
     <id>http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid</id>
-    <content type="html"><![CDATA[<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
+    <content type="html"><![CDATA[<p><img src="http://dl.dropbox.com/u/47336405/Selection_043.png" title="" ></p>
+
+<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
 First thought of creating an activity stream but knew that the users won&rsquo;t be
 reading them since the activity would be about the services of the provider- not something &ldquo;social&rdquo;.
 Then thought of creating a line graph that shows the days and works done by the provider. It wouldn&rsquo;t be unique though.
@@ -120,7 +122,7 @@ So &ldquo;get_provider_counts&rdquo; counts the data in a way cal-heatmap unders
 </span><span class='line'>      <span class="nv">id: </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">provider_id&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
 </span><span class='line'>    <span class="nv">dataType: </span><span class="s">&quot;json&quot;</span>
 </span><span class='line'>    <span class="p">).</span><span class="nx">success</span> <span class="nf">(data) -&gt;</span>
-</span><span class='line'>    <span class="nx">moment</span><span class="p">.</span><span class="nx">lang</span> <span class="s">&quot;fr&quot;</span>
+</span><span class='line'>    <span class="nx">moment</span><span class="p">.</span><span class="nx">lang</span> <span class="s">&quot;en&quot;</span>
 </span><span class='line'>    <span class="nv">calendar = </span><span class="k">new</span> <span class="nx">CalHeatMap</span><span class="p">()</span>
 </span><span class='line'>    <span class="nx">calendar</span><span class="p">.</span><span class="nx">init</span>
 </span><span class='line'>      <span class="nv">itemSelector: </span><span class="s">&quot;</span><span class="err">#</span><span class="s">calheat&quot;</span>

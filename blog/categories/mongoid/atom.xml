@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Mongoid | My Octopress Blog]]></title>
+  <title><![CDATA[Category: Mongoid | Caner's RoR blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mongoid/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-07T00:21:24+03:00</updated>
+  <updated>2014-04-07T00:38:08+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
-    
+    <name><![CDATA[Caner]]></name>
+    <email><![CDATA[canercak@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
@@ -18,7 +18,9 @@
     <link href="http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/"/>
     <updated>2013-08-02T16:52:00+03:00</updated>
     <id>http://canercak.github.io/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid</id>
-    <content type="html"><![CDATA[<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
+    <content type="html"><![CDATA[<p><img class="<a" src="href="http://dl.dropbox.com/u/47336405/Selection_043.png">http://dl.dropbox.com/u/47336405/Selection_043.png</a>" title="" ></p>
+
+<p>I had to present activites of a service provider to it&rsquo;s users in a unique way.
 First thought of creating an activity stream but knew that the users won&rsquo;t be
 reading them since the activity would be about the services of the provider- not something &ldquo;social&rdquo;.
 Then thought of creating a line graph that shows the days and works done by the provider. It wouldn&rsquo;t be unique though.
@@ -59,7 +61,7 @@ data:
   id: $("#provider_id").val()
 dataType: "json"
 ).success (data) -&gt; 
-moment.lang "fr"
+moment.lang "en"
 calendar = new CalHeatMap()
 calendar.init
   itemSelector: "#calheat"
