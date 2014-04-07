@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-08T01:06:48+03:00</updated>
+  <updated>2014-04-08T01:09:39+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Collecting User Data for Mongoid Application Using Omniauth Facebook and Koala]]></title>
-    <link href="http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/"/>
-    <updated>2014-04-07T23:37:12+03:00</updated>
-    <id>http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala</id>
+    <title type="html"><![CDATA[Continuously Collecting User Facebook Data for Mongoid Application Using Omniauth, Facebook, Koala and Resque]]></title>
+    <link href="http://canercak.github.io/blog/2014/02/03/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/"/>
+    <updated>2014-02-03T22:37:12+02:00</updated>
+    <id>http://canercak.github.io/blog/2014/02/03/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala</id>
     <content type="html"><![CDATA[<p>Data is the key to long-lasting relationship with users. The more, the better. Once we have relevant data;
 we can target marketing, develop features tailored to specific users and make users trust each other.
 So how do we collect relevant data? There is an easy way. It&rsquo;s Facebook.</p>
