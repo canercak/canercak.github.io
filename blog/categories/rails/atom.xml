@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-08T00:57:24+03:00</updated>
+  <updated>2014-04-08T01:05:06+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -51,7 +51,7 @@ set :cache_expiry_time, 7.days
 
 <p>```</p>
 
-<p>Here are omniauth initialisation details. You can learn more omniauth gem&rsquo;s github page.</p>
+<p>Here are omniauth initialisation details. You can learn more about omniauth on it&rsquo;s github page.</p>
 
 <p>``` ruby config/initialisers/omniauth.rb</p>
 
@@ -68,7 +68,7 @@ APP_CONFIG.facebook.app_secret,
 
 <p>```</p>
 
-<p>The view for our big facebook button</p>
+<p>The haml view for our big facebook button.</p>
 
 <p>``` haml views/pages/_facebook_login.html.haml</p>
 
@@ -85,7 +85,9 @@ APP_CONFIG.facebook.app_secret,
 
 <p>```</p>
 
-<p>``` ruby app/models/user.rb</p>
+<p>Necassary routes to manage sessions</p>
+
+<p>``` ruby config/routes.rb</p>
 
 <p>  # Sessions
   resources :sessions, only: [:create, :destroy]</p>
@@ -97,7 +99,7 @@ APP_CONFIG.facebook.app_secret,
 
 <p>```</p>
 
-<p>Here is my user model. Removed the nonrelevant fields. As you see I&rsquo;m collecting enough data to make decisions.</p>
+<p>Here is the user model. Removed the nonrelevant fields. As you can see I&rsquo;m collecting enough data to make decisions.</p>
 
 <p>``` ruby app/models/user.rb</p>
 
@@ -195,10 +197,10 @@ end</p>
 
 <p>```
 This module is for caching data. I&rsquo;m making resque collect more and more details.
-This data won&rsquo;t be present once the user created for the first time. You have to run resque workers to get them.
-You can also schedule the process with resque scheduler
+We will run resque workers to get them.
+You can also schedule the process with resque scheduler.
 Checkout facebook graph api for more data to get.
-and checkout resque gem on how to use it.</p>
+And checkout resque gem for details.</p>
 
 <p>``` ruby app/models/concerns/facebook.rb</p>
 
@@ -269,7 +271,8 @@ end</p>
 
 <p>```</p>
 
-<p>Now it&rsquo;s time to make decisions!!</p>
+<p>Here we go. The code above will get us the data we defined on our model and it will be updating and adding more data when user logins.
+Now it&rsquo;s time to make decisions!!</p>
 ]]></content>
   </entry>
   

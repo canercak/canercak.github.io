@@ -128,7 +128,7 @@ So this will be different than devise&rsquo;s way.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here are omniauth initialisation details. You can learn more omniauth gem&rsquo;s github page.</p>
+<p>Here are omniauth initialisation details. You can learn more about omniauth on it&rsquo;s github page.</p>
 
 <figure class='code'><figcaption><span>config/initialisers/omniauth.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -147,7 +147,7 @@ So this will be different than devise&rsquo;s way.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The view for our big facebook button</p>
+<p>The haml view for our big facebook button.</p>
 
 <figure class='code'><figcaption><span>views/pages/_facebook_login.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -168,9 +168,9 @@ So this will be different than devise&rsquo;s way.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Necassary routes to manage sessions</p>
 
-
-<figure class='code'><figcaption><span>app/models/user.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>config/routes.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -187,7 +187,7 @@ So this will be different than devise&rsquo;s way.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here is my user model. Removed the nonrelevant fields. As you see I&rsquo;m collecting enough data to make decisions.</p>
+<p>Here is the user model. Removed the nonrelevant fields. As you can see I&rsquo;m collecting enough data to make decisions.</p>
 
 <figure class='code'><figcaption><span>app/models/user.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -360,10 +360,10 @@ So this will be different than devise&rsquo;s way.</p>
 
 
 <p>This module is for caching data. I&rsquo;m making resque collect more and more details.
-This data won&rsquo;t be present once the user created for the first time. You have to run resque workers to get them.
-You can also schedule the process with resque scheduler
+We will run resque workers to get them.
+You can also schedule the process with resque scheduler.
 Checkout facebook graph api for more data to get.
-and checkout resque gem on how to use it.</p>
+And checkout resque gem for details.</p>
 
 <figure class='code'><figcaption><span>app/models/concerns/facebook.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -477,7 +477,8 @@ and checkout resque gem on how to use it.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now it&rsquo;s time to make decisions!!</p>
+<p>Here we go. The code above will get us the data we defined on our model and it will be updating and adding more data when user logins.
+Now it&rsquo;s time to make decisions!!</p>
 </div>
 
 
