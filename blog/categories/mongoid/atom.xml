@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Mongoid | Caner's RoR blog]]></title>
+  <title><![CDATA[Category: Mongoid | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mongoid/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-08T00:37:39+03:00</updated>
+  <updated>2014-04-08T00:57:24+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Collecting User Data to Mongoid Application Using Omniauth Facebook and Koala]]></title>
+    <title type="html"><![CDATA[Collecting User Data for Mongoid Application Using Omniauth Facebook and Koala]]></title>
     <link href="http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/"/>
     <updated>2014-04-07T23:37:12+03:00</updated>
     <id>http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala</id>
@@ -28,9 +28,10 @@ once the button clicked. Something like this:</p>
 
 <p><img class="<a" src="href="http://dl.dropbox.com/u/47336405/Selection_044.png">http://dl.dropbox.com/u/47336405/Selection_044.png</a>"></p>
 
-<p>Then you are ready to get data. I use three gems to collect data
-omniauth, omniauth-facebook and koala for getting data. For config settings there is simple config and caching and updating data I use resque
-I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omniauth-twitter and omniauth-identity for authentication. So this will be different than devise way.</p>
+<p>Then you are ready to go. I use three gems to collect data:
+omniauth, omniauth-facebook and koala. For config settings there is simple config and for caching data I use resque.
+I know that using devise could be easier. But simply, its big.(I have omniauth-identity for nonfacebook logins)
+So this will be different than devise&rsquo;s way.</p>
 
 <p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
 
@@ -50,7 +51,7 @@ set :cache_expiry_time, 7.days
 
 <p>```</p>
 
-<p>Here are omniauth initialisation details. You can also check the details from omniauth gem&rsquo;s website.</p>
+<p>Here are omniauth initialisation details. You can learn more omniauth gem&rsquo;s github page.</p>
 
 <p>``` ruby config/initialisers/omniauth.rb</p>
 
@@ -64,6 +65,35 @@ APP_CONFIG.facebook.app_secret,
 </code></pre>
 
 <p>end</p>
+
+<p>```</p>
+
+<p>The view for our big facebook button</p>
+
+<p>``` haml views/pages/_facebook_login.html.haml</p>
+
+<p>.hidden-phone
+  = link_to auth_at_provider_path(provider: :facebook), class: &lsquo;btn btn-large btn-facebook&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true } do</p>
+
+<pre><code>%i.icon-facebook-sign.icon-large
+= t('login_with_facebook')
+</code></pre>
+
+<p>%p.signin-terms
+  %b= t(&lsquo;we_will_never_post&rsquo;)
+  %br= t(&lsquo;pages.home.signin_terms&rsquo;, appname: APP_CONFIG.app_name, terms_link: link_to(t(&lsquo;terms&rsquo;), :terms, :target=> &lsquo;<em>blank&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true }), policy_link: link_to(t(&lsquo;policy&rsquo;), :policy, :target=> &lsquo;</em>blank&rsquo;)).html_safe</p>
+
+<p>```</p>
+
+<p>``` ruby app/models/user.rb</p>
+
+<p>  # Sessions
+  resources :sessions, only: [:create, :destroy]</p>
+
+<p>  get &lsquo;auth/:provider&rsquo;, to: &lsquo;sessions#new&rsquo;, as: :auth_at_provider
+  get &lsquo;auth/:provider/callback&rsquo;, to: &lsquo;sessions#create&rsquo;
+  get &lsquo;auth/failure&rsquo;, to: redirect(&lsquo;/&rsquo;)
+  get &lsquo;signout&rsquo;, to: &lsquo;sessions#destroy&rsquo;, as: :logout</p>
 
 <p>```</p>
 
@@ -97,7 +127,7 @@ APP_CONFIG.facebook.app_secret,
 
 <p>```</p>
 
-<p>create a module for facebook authentication. This will collect facebook user data and save the user.</p>
+<p>Here is the module for facebook authentication. This will collect facebook user data before saving the user.</p>
 
 <p>``` ruby app/models/concerns/authentication.rb</p>
 

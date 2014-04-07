@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Caner's RoR blog</title>
+  <title>Caner's Ruby on rails blog</title>
   <meta name="author" content="Caner">
 
   
@@ -22,7 +22,7 @@ we can target marketing, develop features &hellip;">
   <link rel="canonical" href="http://canercak.github.io">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Caner's RoR blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="Caner's Ruby on rails blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -37,9 +37,9 @@ we can target marketing, develop features &hellip;">
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">Caner's RoR blog</a></h1>
+  <h1><a href="/">Caner's Ruby on rails blog</a></h1>
   
-    <h2>It's all about the beauty of ruby</h2>
+    <h2>It's all about the beauty of Ruby. I'm not a "Guru", not a "Rock Star" or "Ninja" at all. But I can do every single thing I need and I enjoy so much because I'm in love with her beauty.</h2>
   
 </hgroup>
 
@@ -72,7 +72,7 @@ we can target marketing, develop features &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Collecting User Data to Mongoid Application Using Omniauth Facebook and Koala</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Collecting User Data for Mongoid Application Using Omniauth Facebook and Koala</a></h1>
     
     
       <p class="meta">
@@ -105,9 +105,10 @@ once the button clicked. Something like this:</p>
 
 <p><img src="http://dl.dropbox.com/u/47336405/Selection_044.png"></p>
 
-<p>Then you are ready to get data. I use three gems to collect data
-omniauth, omniauth-facebook and koala for getting data. For config settings there is simple config and caching and updating data I use resque
-I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omniauth-twitter and omniauth-identity for authentication. So this will be different than devise way.</p>
+<p>Then you are ready to go. I use three gems to collect data:
+omniauth, omniauth-facebook and koala. For config settings there is simple config and for caching data I use resque.
+I know that using devise could be easier. But simply, its big.(I have omniauth-identity for nonfacebook logins)
+So this will be different than devise&rsquo;s way.</p>
 
 <p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
 
@@ -130,7 +131,7 @@ I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omnia
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here are omniauth initialisation details. You can also check the details from omniauth gem&rsquo;s website.</p>
+<p>Here are omniauth initialisation details. You can learn more omniauth gem&rsquo;s github page.</p>
 
 <figure class='code'><figcaption><span>config/initialisers/omniauth.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -146,6 +147,46 @@ I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omnia
 </span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
 </span><span class='line'>    <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
 </span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The view for our big facebook button</p>
+
+<figure class='code'><figcaption><span>views/pages/_facebook_login.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>
+</span><span class='line'><span class="nc">.hidden-phone</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">link_to</span> <span class="n">auth_at_provider_path</span><span class="p">(</span><span class="ss">provider</span><span class="p">:</span> <span class="ss">:facebook</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-large btn-facebook&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nt">%i</span><span class="nc">.icon-facebook-sign.icon-large</span>
+</span><span class='line'>    <span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;login_with_facebook&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nt">%p</span><span class="nc">.signin-terms</span>
+</span><span class='line'>  <span class="nt">%b</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;we_will_never_post&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nt">%br</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;pages.home.signin_terms&#39;</span><span class="p">,</span> <span class="ss">appname</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span> <span class="n">terms_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;terms&#39;</span><span class="p">),</span> <span class="ss">:terms</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}),</span> <span class="n">policy_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;policy&#39;</span><span class="p">),</span> <span class="ss">:policy</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">html_safe</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>app/models/user.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># Sessions</span>
+</span><span class='line'>  <span class="n">resources</span> <span class="ss">:sessions</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:create</span><span class="p">,</span> <span class="ss">:destroy</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">get</span> <span class="s1">&#39;auth/:provider&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#new&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:auth_at_provider</span>
+</span><span class='line'>  <span class="n">get</span> <span class="s1">&#39;auth/:provider/callback&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#create&#39;</span>
+</span><span class='line'>  <span class="n">get</span> <span class="s1">&#39;auth/failure&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">get</span> <span class="s1">&#39;signout&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#destroy&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:logout</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -200,7 +241,7 @@ I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omnia
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>create a module for facebook authentication. This will collect facebook user data and save the user.</p>
+<p>Here is the module for facebook authentication. This will collect facebook user data before saving the user.</p>
 
 <figure class='code'><figcaption><span>app/models/concerns/authentication.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -884,7 +925,7 @@ Here you can see relevant parts from the code.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Collecting User Data to Mongoid Application Using Omniauth Facebook and Koala</a>
+        <a href="/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Collecting User Data for Mongoid Application Using Omniauth Facebook and Koala</a>
       </li>
     
       <li class="post">
