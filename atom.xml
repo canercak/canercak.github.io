@@ -4,7 +4,7 @@
   <title><![CDATA[Caner's RoR blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-07T00:38:08+03:00</updated>
+  <updated>2014-04-08T00:37:39+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -12,6 +12,359 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Collecting User Data to Mongoid Application Using Omniauth Facebook and Koala]]></title>
+    <link href="http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/"/>
+    <updated>2014-04-07T23:37:12+03:00</updated>
+    <id>http://canercak.github.io/blog/2014/04/07/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala</id>
+    <content type="html"><![CDATA[<p>Data is the key to long-lasting relationship with users. The more, the better. Once we have relevant data;
+we can target marketing, develop features tailored to specific users and make users trust each other.
+So how do we collect relevant data? There is an easy way. It&rsquo;s Facebook.</p>
+
+<p>First, talk with your solicitor to add your Terms&amp;Conditions document that you are collecting data by using facebook.
+Then make a big &ldquo;Login with Facebook&rdquo; button on your landing page. Don&rsquo;t forget to write that the user accepts the conditions
+once the button clicked. Something like this:</p>
+
+<p><img src="http://dl.dropbox.com/u/47336405/Selection_044.png"></p>
+
+<p>Then you are ready to get data. I use three gems to collect data
+omniauth, omniauth-facebook and koala for getting data. For config settings there is simple config and caching and updating data I use resque
+I&rsquo;m not using devise for couple of reasons. I use omniauth-facebook, omniauth-twitter and omniauth-identity for authentication. So this will be different than devise way.</p>
+
+<p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
+
+<figure class='code'><figcaption><span>config/settings/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">SimpleConfig</span><span class="o">.</span><span class="n">for</span> <span class="ss">:application</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">group</span> <span class="ss">:facebook</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:namespace</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_NAMESPACE&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:app_id</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_APP_ID&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:app_secret</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_SECRET&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:scope</span><span class="p">,</span> <span class="s1">&#39;email, publish_stream, user_birthday, user_about_me, user_education_history, user_interests, user_likes, user_religion_politics, user_work_history&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:cache_expiry_time</span><span class="p">,</span> <span class="mi">7</span><span class="o">.</span><span class="n">days</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here are omniauth initialisation details. You can also check the details from omniauth gem&rsquo;s website.</p>
+
+<figure class='code'><figcaption><span>config/initialisers/omniauth.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="ss">OmniAuth</span><span class="p">:</span><span class="ss">:Builder</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
+</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
+</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here is my user model. Removed the nonrelevant fields. As you see I&rsquo;m collecting enough data to make decisions.</p>
+
+<figure class='code'><figcaption><span>app/models/user.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Mongoid</span><span class="p">:</span><span class="ss">:Document</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="o">::</span><span class="ss">Concerns</span><span class="p">:</span><span class="ss">:User</span><span class="o">::</span><span class="no">Authentication</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="o">::</span><span class="ss">Concerns</span><span class="p">:</span><span class="ss">:User</span><span class="o">::</span><span class="no">Facebook</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:provider</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:uid</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:oauth_token</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:oauth_expires_at</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:facebook_permissions</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="nb">Array</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:facebook_friends</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="nb">Array</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:facebook_favorites</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="nb">Array</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:facebook_data_cached_at</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="no">DateTime</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="s1">&#39;2014-01-01&#39;</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:gender</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:username</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:bio</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:languages</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="nb">Array</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:birthday</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="no">Date</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:work</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="no">Hash</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:education</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="no">Hash</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:email</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="n">field</span> <span class="ss">:facebook_verified</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="no">Boolean</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="kp">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>create a module for facebook authentication. This will collect facebook user data and save the user.</p>
+
+<figure class='code'><figcaption><span>app/models/concerns/authentication.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Concerns</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">User</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Authentication</span>
+</span><span class='line'>      <span class="kp">extend</span> <span class="ss">ActiveSupport</span><span class="p">:</span><span class="ss">:Concern</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_fields_from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">set_credentials</span> <span class="n">auth</span><span class="o">.</span><span class="n">credentials</span>
+</span><span class='line'>          <span class="n">set_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">info</span>
+</span><span class='line'>          <span class="n">set_extra_raw_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
+</span><span class='line'>          <span class="n">set_extra_raw_info_special_permissions</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
+</span><span class='line'>          <span class="n">set_permissions</span>
+</span><span class='line'>          <span class="no">Resque</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="no">FacebookDataCacher</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">rescue</span> <span class="ss">Redis</span><span class="p">:</span><span class="ss">:CannotConnectError</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kp">private</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_credentials</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">oauth_token</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">token</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">oauth_expires_at</span> <span class="o">=</span>  <span class="no">Time</span><span class="o">.</span><span class="n">at</span> <span class="n">credentials</span><span class="o">.</span><span class="n">expires_at</span> <span class="o">||</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_info</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">email</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">facebook_verified</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">verified</span> <span class="o">||</span> <span class="kp">false</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_extra_raw_info</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">username</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">gender</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">bio</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">bio</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">languages</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">languages</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_extra_raw_info_special_permissions</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">birthday</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span><span class="p">,</span> <span class="s2">&quot;%m/%d/%Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">at_midnight</span> <span class="k">if</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">work</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">work</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">education</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">education</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">set_permissions</span>
+</span><span class='line'>          <span class="n">facebook</span> <span class="k">do</span> <span class="o">|</span><span class="n">fb</span><span class="o">|</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">facebook_permissions</span> <span class="o">=</span> <span class="n">fb</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;permissions&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">user</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="ss">:provider</span><span class="p">,</span> <span class="ss">:uid</span><span class="p">))</span><span class="o">.</span><span class="n">first_or_initialize</span>
+</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">provider</span>
+</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">uid</span>
+</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">set_fields_from_omniauth</span> <span class="n">auth</span>
+</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>          <span class="n">user</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This module is for caching data. I&rsquo;m making resque collect more and more details.
+This data won&rsquo;t be present once the user created for the first time. You have to run resque workers to get them.
+You can also schedule the process with resque scheduler
+Checkout facebook graph api for more data to get.
+and checkout resque gem on how to use it.</p>
+
+<figure class='code'><figcaption><span>app/models/concerns/facebook.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Concerns</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">User</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Facebook</span>
+</span><span class='line'>      <span class="kp">extend</span> <span class="ss">ActiveSupport</span><span class="p">:</span><span class="ss">:Concern</span>
+</span><span class='line'>      <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">facebook</span>
+</span><span class='line'>          <span class="vi">@facebook</span> <span class="o">||=</span> <span class="ss">Koala</span><span class="p">:</span><span class="ss">:Facebook</span><span class="o">::</span><span class="no">API</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">oauth_token</span><span class="p">)</span>
+</span><span class='line'>          <span class="nb">block_given?</span> <span class="p">?</span> <span class="k">yield</span><span class="p">(</span><span class="vi">@facebook</span><span class="p">)</span> <span class="p">:</span> <span class="vi">@facebook</span>
+</span><span class='line'>        <span class="k">rescue</span> <span class="ss">Koala</span><span class="p">:</span><span class="ss">:Facebook</span><span class="o">::</span><span class="no">APIError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>          <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>          <span class="kp">nil</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">has_facebook_permission?</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+</span><span class='line'>           <span class="n">facebook_permissions</span><span class="o">[</span><span class="n">scope</span><span class="o">.</span><span class="n">to_s</span><span class="o">].</span><span class="n">to_i</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">facebook_permissions?</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">cache_facebook_data?</span>
+</span><span class='line'>          <span class="n">favorites</span> <span class="o">=</span> <span class="sx">%w(music books movies television games activities interests)</span>
+</span><span class='line'>          <span class="n">facebook</span> <span class="k">do</span> <span class="o">|</span><span class="n">fb</span><span class="o">|</span>
+</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">fb</span><span class="o">.</span><span class="n">batch</span> <span class="k">do</span> <span class="o">|</span><span class="n">batch_api</span><span class="o">|</span>
+</span><span class='line'>              <span class="n">batch_api</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;friends&#39;</span><span class="p">)</span>
+</span><span class='line'>              <span class="n">favorites</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">favorite</span><span class="o">|</span>
+</span><span class='line'>                <span class="n">batch_api</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="n">favorite</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">end</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">any?</span>
+</span><span class='line'>               <span class="nb">self</span><span class="o">.</span><span class="n">facebook_friends</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="p">?</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>              <span class="nb">self</span><span class="o">.</span><span class="n">facebook_favorites</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="p">?</span> <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="o">-</span><span class="mi">1</span><span class="o">].</span><span class="n">flatten</span> <span class="p">:</span> <span class="o">[]</span>
+</span><span class='line'>              <span class="k">return</span> <span class="kp">true</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>          <span class="kp">false</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We define a resque worker to cache facebook data.</p>
+
+<figure class='code'><figcaption><span>app/workers/facebook_data_cacher.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">FacebookDataCacher</span>
+</span><span class='line'>  <span class="vi">@queue</span> <span class="o">=</span> <span class="ss">:facebook_cache_data_queue</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">perform</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span> <span class="n">user_id</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">facebook_data_cached_at</span> <span class="o">&lt;</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">cache_expiry_time</span><span class="o">.</span><span class="n">ago</span><span class="o">.</span><span class="n">utc</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">cache_facebook_data?</span>
+</span><span class='line'>        <span class="n">user</span><span class="o">.</span><span class="n">update_attribute</span> <span class="ss">:facebook_data_cached_at</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now it&rsquo;s time to make decisions!!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Creating Activity Cal-heatmap Using Public_activity and Mongoid]]></title>
