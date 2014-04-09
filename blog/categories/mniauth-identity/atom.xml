@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mniauth-identity | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mniauth-identity/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:15:11+03:00</updated>
+  <updated>2014-04-09T23:17:33+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -24,7 +24,7 @@ Why? Because it doesn&rsquo;t cover the &ldquo;details&rdquo; of a login system.
 but thats all. No forms, no password resets, no emails, no decent validations, etc. It&rsquo;s really simple and that simplicity won&rsquo;t help you. And the worst thing is it&rsquo;s hard to customise.
 You have that initialiser file and you don&rsquo;t understand what you do in there. There are also no resources other than Ryan&rsquo;s Railscast and couple of blog posts.
 The reason I&rsquo;m writing it is because there may be people still wan&rsquo;t to use it as I do.
- I&rsquo;ve lost considerable amount of time daling with it&rsquo;s login fail bug,
+ I&rsquo;ve lost considerable amount of time dealing with it&rsquo;s login fail bug,
  integrating it and making a decent login system out of it and now after all that time
   I don&rsquo;t want to deal with login systems at all.</p>
 
@@ -462,15 +462,14 @@ binding.pry
 mail(to: user["email"], subject: t('user_mailer.pass_reset.subject'))
 </code></pre>
 
-<p>  end</p>
-
-<p>```</p>
+<p>  end
+```</p>
 
 <p>and the actual mail which I&rsquo;ve only paste the relevant part</p>
 
 <p>``` haml app/views/mailers/password_reset.html.haml</p>
 
-<p>href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
+<p> #href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
 
 <p>```</p>
 
