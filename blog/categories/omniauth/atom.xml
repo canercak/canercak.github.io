@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Omniauth | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/omniauth/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:20:18+03:00</updated>
+  <updated>2014-04-09T23:21:47+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -23,10 +23,10 @@ Don&rsquo;t use omniauth-identity!
 Why? Because it doesn&rsquo;t cover the &ldquo;details&rdquo; of a login system. And for a login system details are absolutely necesssary. It does make the user register and sign-in
 but thats all. No forms, no password resets, no emails, no decent validations, etc. It&rsquo;s really simple and that simplicity won&rsquo;t help you. And the worst thing is it&rsquo;s hard to customise.
 You have that initialiser file and you don&rsquo;t understand what you do in there. There are also no resources other than Ryan&rsquo;s Railscast and couple of blog posts.
-The reason I&rsquo;m writing it is because there may be people still wan&rsquo;t to use it as I do.
- I&rsquo;ve lost considerable amount of time dealing with it&rsquo;s login fail bug,
- integrating it and making a decent login system out of it and now after all that time
-  I don&rsquo;t want to deal with login systems at all.</p>
+The reason I&rsquo;m writing this blog post is because there may be people still wan&rsquo;t to use it as I do.
+I&rsquo;ve lost considerable amount of time dealing with it&rsquo;s login fail bug,
+integrating it and making a decent login system out of it and now after all that time
+I don&rsquo;t want to deal with login systems at all.</p>
 
 <p>So we start with adding the gem</p>
 
