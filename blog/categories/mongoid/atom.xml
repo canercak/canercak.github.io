@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mongoid | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mongoid/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T03:04:41+03:00</updated>
+  <updated>2014-04-09T22:47:47+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -12,6 +12,373 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Full Login System Out of Omniauth-identity With Mongoid and Jquery Validations]]></title>
+    <link href="http://canercak.github.io/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations/"/>
+    <updated>2014-02-09T12:30:10+02:00</updated>
+    <id>http://canercak.github.io/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations</id>
+    <content type="html"><![CDATA[<p>I want to start this post with one definite sentence.
+Don&rsquo;t use omniauth-identity!
+Why? Because it doesn&rsquo;t cover the &ldquo;details&rdquo; of a login system. And for a login system details are absolutely necesssary. It does make the user register and sign-in
+but thats all. No forms, no password resets, no emails, no decent validations, etc. It&rsquo;s really simple and that simplicity won&rsquo;t help you. And the worst thing is it&rsquo;s hard to customise.
+You have that initialiser file and you don&rsquo;t understand what you do in there. There are also no resources other than Ryan&rsquo;s Railscast and couple of blog posts.
+The reason I&rsquo;m writing it is because there may be people still wan&rsquo;t to use it as I do. I&rsquo;ve lost considerable amount of time integrating it making a decent login system out of it and now after all that time I don&rsquo;t want to change it.</p>
+
+<p>So we start with adding the gem</p>
+
+<p>``` ruby Gemfile
+gem &ldquo;omniauth&rdquo;
+gem &lsquo;omniauth-identity&rsquo;</p>
+
+<p>```</p>
+
+<p>``` ruby config/initialisers/omniauth.rb</p>
+
+<p>OmniAuth.config.on_failure = Proc.new { |env|
+  OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+}
+end</p>
+
+<p>```</p>
+
+<p>The we create the modal and yes it doesn&rsquo;t directly integrate with your user model(or I didn&rsquo;t lost time trying to do it)</p>
+
+<p>``` ruby models/identity.rb</p>
+
+<p>class Identity
+  include Mongoid::Document
+  include OmniAuth::Identity::Models::Mongoid</p>
+
+<p>  field :email, type: String
+  field :name, type: String
+  field :password_digest, type: String
+  field :username, type: String</p>
+
+<p>  belongs_to :user
+  validates_presence_of :name
+  validate :uniqueness_of_email
+  validates_format_of :email, :with => /^[-a-z0-9_+.]+\@([-a-z0-9]+.)+[a-z0-9]{2,4}$/i</p>
+
+<p>  def uniqueness_of_email</p>
+
+<pre><code>self.errors.add(:email, "email is already in use") unless User.find_by(email:email).nil? 
+</code></pre>
+
+<p>  end</p>
+
+<p>end</p>
+
+<p>```</p>
+
+<p>Controller</p>
+
+<p>``` ruby controllers/identities_controller.rb</p>
+
+<p> class IdentitiesController &lt; ApplicationController</p>
+
+<p>def new
+  @identity = env[&lsquo;omniauth.identity&rsquo;]
+  @user =User.new
+end</p>
+
+<p>```</p>
+
+<p>``` haml views/pages/home.html.haml</p>
+
+<pre><code>%big.inline-block.new-identity= link_to t('register_now'), '#new-identity', data: { toggle: 'modal' }
+%big.inline-block.new-identity veya
+%big.inline-block.login-identity= link_to t('login_now'), '#login-identity', data: { toggle: 'modal' }
+</code></pre>
+
+<p>```</p>
+
+<p>``` haml views/shared/_modal_login_identity.html.haml</p>
+
+<h1>login-identity.modal.hide.fade{ tabindex: -1, role: &lsquo;dialog&rsquo;, &lsquo;aria-labelledby&rsquo; => t(&lsquo;login_identity&rsquo;), &lsquo;aria-hidden&rsquo; => true }</h1>
+
+<p>  .modal-header</p>
+
+<pre><code>%button.close{ type: 'button', data: { dismiss: 'modal' }, 'aria-hidden' =&gt; true } &amp;times;
+%h3= t('shared.navbar.login_identity')
+</code></pre>
+
+<p>  .modal-body</p>
+
+<pre><code>= render 'identities/login'
+</code></pre>
+
+<p>  .modal-footer</p>
+
+<pre><code>= link_to t('close'), '#', 'aria-hidden' =&gt; true, data: { dismiss: 'modal' }, class: 'btn'
+</code></pre>
+
+<p>```</p>
+
+<p>``` haml views/shared/_modal_new_identity.html.haml</p>
+
+<h1>new-identity.modal.hide.fade{ tabindex: -1, role: &lsquo;dialog&rsquo;, &lsquo;aria-labelledby&rsquo; => t(&lsquo;new_identity&rsquo;), &lsquo;aria-hidden&rsquo; => true }</h1>
+
+<p>  .modal-header</p>
+
+<pre><code>%button.close{ type: 'button', data: { dismiss: 'modal' }, 'aria-hidden' =&gt; true } &amp;times;
+%h3= t('shared.navbar.new_identity')
+</code></pre>
+
+<p>  .modal-body</p>
+
+<pre><code>=render 'identities/register'
+</code></pre>
+
+<p>  .modal-footer</p>
+
+<pre><code>= link_to t('close'), '#', 'aria-hidden' =&gt; true, data: { dismiss: 'modal' }, class: 'btn'
+</code></pre>
+
+<p>```</p>
+
+<p>``` ruby views/identities/_login.rb</p>
+
+<p>=form_tag(&lsquo;/auth/identity/callback&rsquo;,  :method => &lsquo;post&rsquo;, :id => &lsquo;actual-login-form&rsquo;) do
+  = label_tag :login_error, t(&ldquo;shared.navbar.wrong_password&rdquo;), class: &lsquo;control-label&rsquo;, id: &lsquo;error_code_label_login&rsquo;
+  .field</p>
+
+<pre><code>= label_tag :auth_key,t('shared.navbar.email')
+= text_field_tag :auth_key, nil 
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= label_tag :password, t('shared.navbar.password')
+= password_field_tag :password, nil
+</code></pre>
+
+<p>  .actions</p>
+
+<pre><code>= submit_tag t('shared.navbar.login'), id: "login_submit", class: 'btn btn-primary', disable_with: t('helpers.disable_with')
+</code></pre>
+
+<p>  %br</p>
+
+<pre><code>= link_to t('shared.navbar.forgot_password'), new_password_reset_path
+</code></pre>
+
+<ul>
+<li>if flash[:error] == I18n.t(&ldquo;shared.navbar.wrong_password&rdquo;)
+:coffee
+  $(document).on &lsquo;ready&rsquo;, &ndash;>
+    $(&ldquo;#login-identity&rdquo;).modal &ldquo;show&rdquo;
+    $(&ldquo;#error_code_label_login&rdquo;).show()
+    $(&ldquo;#password&rdquo;).focus()</li>
+</ul>
+
+
+<p>```</p>
+
+<p>``` ruby views/identities/_register.rb</p>
+
+<p>= form_tag &ldquo;/auth/identity/register&rdquo;, id: &lsquo;signupForm&rsquo; do
+  &ndash; if @identity &amp;&amp; @identity.errors.any?</p>
+
+<pre><code>.error_messages
+  %h2
+    = pluralize(@identity.errors.count, "error")
+    prohibited this account from being saved:
+  %ul
+    - @identity.errors.full_messages.each do |msg|
+      %li= msg
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= label_tag :name, t('shared.navbar.name')
+= text_field_tag :name, @identity.try(:name)
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= label_tag :email,t('shared.navbar.email')
+= text_field_tag :email, @identity.try(:email)
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= label_tag :password, t('shared.navbar.password')
+= password_field_tag :password
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= label_tag :password_confirmation,t('shared.navbar.password_again')
+= password_field_tag :password_confirmation
+</code></pre>
+
+<p>  = submit_tag t(&lsquo;shared.navbar.register&rsquo;), class: &lsquo;btn btn-primary&rsquo;, disable_with: t(&lsquo;helpers.disable_with&rsquo;)</p>
+
+<p>```</p>
+
+<p>``` coffeescript pages.js.coffee</p>
+
+<p>$(document).on &lsquo;ready&rsquo;, &ndash;></p>
+
+<p>  $(&ldquo;#signupForm&rdquo;).validate</p>
+
+<pre><code>errorClass: "error_class"
+validClass: "valid_class"
+rules:
+  name: 
+    required: true
+  email:
+    required: true
+    email: true
+    remote: "/users/check_email" 
+  password:
+    required: true
+    minlength: 5 
+  password_confirmation:
+    required: true
+    minlength: 5
+    equalTo: "#password" 
+messages:
+  name: I18n.t "signup.name.required"  
+  password:
+    required: I18n.t "signup.name"  
+    minlength: I18n.t "signup.password.minlength"  
+  password_confirmation:
+    required: I18n.t "signup.password_confirmation.required" 
+    minlength: I18n.t "signup.password_confirmation.minlength" 
+    equalTo: I18n.t "signup.password_confirmation.equalTo" 
+  email:
+    required: I18n.t "signup.email.required" 
+    email: I18n.t "signup.email.email" 
+    remote: I18n.t "signup.email.remote" 
+</code></pre>
+
+<p>  $(&ldquo;#actual-login-form&rdquo;).validate</p>
+
+<pre><code>errorClass: "error_class"
+validClass: "valid_class"
+rules:
+  email:
+    required: true
+    email: true
+  password:
+    required: true
+messages:
+  password:
+    required: I18n.t "signup.name"  
+  email:
+    required: I18n.t "signup.email.required" 
+    email: I18n.t "signup.email.email" 
+</code></pre>
+
+<p>```</p>
+
+<p>``` ruby controllers/password_resets_controller.rb</p>
+
+<p>class PasswordResetsController &lt; ApplicationController
+  def new
+  end</p>
+
+<p>  def create</p>
+
+<pre><code>user = User.find_by(email: params[:email])
+user.send_password_reset(user)
+redirect_to root_url, :notice =&gt; I18n.t("password_resets.email_sent")
+</code></pre>
+
+<p>  end</p>
+
+<p>  def edit</p>
+
+<pre><code>@user = User.find_by(password_reset_token: params[:id])
+</code></pre>
+
+<p>  end</p>
+
+<p>  def update</p>
+
+<pre><code>@user = User.find_by(password_reset_token: params[:id])
+if @user.password_reset_sent_at &lt; 2.hours.ago
+  redirect_to new_password_reset_path, :alert =&gt; I18n.t("password_resets.expired")
+else
+  @user.update_attributes(permitted_params.user)
+  @identity = Identity.find_by email: @user.email 
+  @identity.password = @user.password
+  @identity.password_confirmation = @user.password_confirmation
+  if @identity.save        
+    redirect_to root_url, :notice =&gt; I18n.t("password_resets.password_has_been_reset")
+  else
+    redirect_to root_url, :notice =&gt; I18n.t("password_resets.error_in_password_reset")
+  end          
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>```</p>
+
+<p>``` ruby views/password_resets/new.html.haml</p>
+
+<p>= form_tag password_resets_path, :method => :post do
+  .field</p>
+
+<pre><code>= label_tag :email, t('shared.navbar.email')
+= text_field_tag :email, params[:email]
+</code></pre>
+
+<p>  = submit_tag t(&lsquo;shared.navbar.reset_password&rsquo;),  class: &lsquo;btn btn-primary&rsquo;, disable_with: t(&lsquo;helpers.disable_with&rsquo;)</p>
+
+<p>```</p>
+
+<p>``` ruby views/password_resets/edit.html.haml</p>
+
+<p>= form_for @user, :url => password_reset_path(params[:id]) do |f|
+  &ndash; if @user.errors.any?</p>
+
+<pre><code>.error_messages
+  %h2 Form is invalid
+  %ul
+    - for message in @user.errors.full_messages
+      %li= message
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= f.label :password
+= f.password_field :password
+</code></pre>
+
+<p>  .field</p>
+
+<pre><code>= f.label :password_confirmation
+= f.password_field :password_confirmation
+</code></pre>
+
+<p>  .actions= f.submit &ldquo;Update Password&rdquo;</p>
+
+<p><code>
+</code> ruby app/mailers/password_resets_mailer.rb</p>
+
+<p>  def password_reset_email(user)</p>
+
+<pre><code>@user = user
+binding.pry
+mail(to: user["email"], subject: t('user_mailer.pass_reset.subject'))
+</code></pre>
+
+<p>  end</p>
+
+<p>&hellip;</p>
+
+<p>``` ruby app/views/mailers/password_reset.html.haml</p>
+
+<p>href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
+
+<p>&hellip;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Continuously Collecting User Facebook Data for Mongoid Application Using Omniauth, Facebook, Koala and Resque]]></title>
