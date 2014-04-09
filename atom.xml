@@ -4,7 +4,7 @@
   <title><![CDATA[Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:09:23+03:00</updated>
+  <updated>2014-04-09T23:13:26+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -595,26 +595,21 @@ don&rsquo;t forget to save the user too. I&rsquo;m setting user&rsquo;s provider
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">password_reset_email</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 </span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
 </span><span class='line'>    <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span>
 </span><span class='line'>    <span class="n">mail</span><span class="p">(</span><span class="ss">to</span><span class="p">:</span> <span class="n">user</span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.pass_reset.subject&#39;</span><span class="p">))</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="ow">and</span> <span class="n">the</span> <span class="n">actual</span> <span class="n">mail</span> <span class="n">which</span> <span class="n">I</span><span class="err">&#39;</span><span class="n">ve</span> <span class="n">only</span> <span class="n">paste</span> <span class="n">the</span> <span class="n">relevant</span> <span class="n">part</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> haml app/views/mailers/password_reset.html.haml</p>
+<p>and the actual mail which I&rsquo;ve only paste the relevant part</p>
 
-<p>href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
+<figure class='code'><figcaption><span>app/views/mailers/password_reset.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>href: &quot;<span class="si">#{</span><span class="n">edit_password_reset_url</span><span class="p">(</span><span class="vi">@user</span><span class="o">.</span><span class="n">password_reset_token</span><span class="p">)</span><span class="si">}</span>&quot;}=t(&quot;.pass_reset_link_button&quot;)
+</span></code></pre></td></tr></table></div></figure>
 
-<p>&hellip;</p>
 
 <p>So it works. At least omniauth-identity has tests..I really could not do test-driven with it  so I&rsquo;ll add the tests soon..</p>
 ]]></content>

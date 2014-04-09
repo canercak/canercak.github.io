@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mniauth-identity | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mniauth-identity/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:09:23+03:00</updated>
+  <updated>2014-04-09T23:13:26+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -464,7 +464,7 @@ mail(to: user["email"], subject: t('user_mailer.pass_reset.subject'))
 
 <p>  end</p>
 
-<p>&hellip;</p>
+<p>```</p>
 
 <p>and the actual mail which I&rsquo;ve only paste the relevant part</p>
 
@@ -472,7 +472,7 @@ mail(to: user["email"], subject: t('user_mailer.pass_reset.subject'))
 
 <p>href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
 
-<p>&hellip;</p>
+<p>```</p>
 
 <p>So it works. At least omniauth-identity has tests..I really could not do test-driven with it  so I&rsquo;ll add the tests soon..</p>
 ]]></content>
