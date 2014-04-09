@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Mniauth-identity | Caner's Ruby on rails blog]]></title>
-  <link href="http://canercak.github.io/blog/categories/mniauth-identity/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Jquery Validations | Caner's Ruby on rails blog]]></title>
+  <link href="http://canercak.github.io/blog/categories/jquery-validations/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:17:33+03:00</updated>
+  <updated>2014-04-09T23:20:18+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
