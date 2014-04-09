@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mniauth-identity | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mniauth-identity/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:13:26+03:00</updated>
+  <updated>2014-04-09T23:15:11+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -451,7 +451,7 @@ end</p>
 
 <p>```</p>
 
-<p>Mailers&hellip;</p>
+<p>Mailers</p>
 
 <p>``` ruby app/mailers/password_resets_mailer.rb</p>
 
