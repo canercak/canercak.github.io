@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Transloadit | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/transloadit/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-15T01:42:02+03:00</updated>
+  <updated>2014-04-15T02:03:24+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -14,25 +14,27 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Forget About Carrierwave and Paperclip]]></title>
+    <title type="html"><![CDATA[Forget About Carrierwave and Paperclip, Use Transloadit]]></title>
     <link href="http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/"/>
     <updated>2014-04-15T00:21:48+03:00</updated>
     <id>http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip</id>
     <content type="html"><![CDATA[<p>Today&rsquo;s post is about lovable transloadit. What is transloadit and why it is lovable? Well,
 if you have anything to upload then transloadit sorts out the processing, encoding
-and bandwidth that your server may face with and this is just the start. Say you have videos;
+,bandwidth that your server may face and this is just the start. Say you have videos;
 transloadit uploads, processes, encodes, crops, watermarks, exports, etc.
-Same for images, sounds, pdfs, rars and almost all. So you don&rsquo;t have to use gems,
-create an uploader classes, gridfs storages and lock your heroku dynos on upload times.
-It does all and provides you the link of the file. Yes it&rsquo;s paid(like 20$ a month) but when you compare it
-with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
+Same for images, sounds, pdfs, rars and almost all.
+You don&rsquo;t have to use carrierwave-imagemagick-paperclip, create an uploader classes,
+allocate gridfs storages and lock your heroku dynos on upload times.
+Some people integrate it with paperclip maybe for keeping the uploaded file on page after callback
+but I think its uncesesary &ndash; check my code you can sort that too.
+So don&rsquo;t even think about anything else, it does all and provides you the link of the file.
+Yes it&rsquo;s paid(like 20$ a month) but when you compare it with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
 
 <p>I had to create a system where user uploads videos and admin controls them.
-It&rsquo;s actually more complicated than that but knowing it will give you an idea.
-I used transloadit with jasny file uploader and flowplayer to make it happen.</p>
+It&rsquo;s actually more complicated than that but knowing that will give you an idea.</p>
 
 <p>We start with creating a template file on transloadit website. You just start with their free plan.
-Here is my template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
+Here is the template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
 of every video and exporting them to our s3 bucket.</p>
 
 <p>``` json transloadit template</p>
@@ -219,7 +221,7 @@ end
 <p>```</p>
 
 <p>This is special for my case. As you see I compare the metadata of the video I get from transloadit params.
-We assume that all uploaded videos have create dates. All videos coming from phones and electronic devices have them.
+We assume that all uploaded videos have create dates. All videos coming from phones and recording devices have them.
 I compare create date of the video and upload time with the event times.
 So transloadit enables me to check if the video has uploaded between specific times(start-end times of an event).</p>
 
@@ -280,7 +282,8 @@ return upload
 I have a partial with video, thumbnail carousel and accept-reject buttons in it.
 By the way if you discover owl-carousel you won&rsquo;t be using bootstrap carousel anymore.
 I won&rsquo;t go into detail of jquery partial updates, carousel and flowplayer integration since this post is about transloadit.
-Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.</p>
+Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.
+We did not need else conditions intentionally.</p>
 
 <p>``` ruby admin/events/_show_adminevent.html.haml</p>
 
@@ -335,7 +338,9 @@ Check their websites for more information. I had to use coffescript inline becau
 
 <p>```</p>
 
-<p>Here we go. Thank you for reading.</p>
+<p>Here we go.</p>
+
+<p><img class="<a" src="href="http://dl.dropbox.com/u/47336405/Selection_045.png">http://dl.dropbox.com/u/47336405/Selection_045.png</a>"></p>
 ]]></content>
   </entry>
   

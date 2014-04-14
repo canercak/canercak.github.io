@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Forget About Carrierwave and Paperclip - Caner's Ruby on rails blog</title>
+  <title>Forget About Carrierwave and Paperclip, Use Transloadit - Caner's Ruby on rails blog</title>
   <meta name="author" content="Caner">
 
   
@@ -69,7 +69,7 @@ if you have anything to upload then transloadit &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Forget About Carrierwave and Paperclip</h1>
+      <h1 class="entry-title">Forget About Carrierwave and Paperclip, Use Transloadit</h1>
     
     
       <p class="meta">
@@ -97,19 +97,21 @@ if you have anything to upload then transloadit &hellip;">
 
 <div class="entry-content"><p>Today&rsquo;s post is about lovable transloadit. What is transloadit and why it is lovable? Well,
 if you have anything to upload then transloadit sorts out the processing, encoding
-and bandwidth that your server may face with and this is just the start. Say you have videos;
+,bandwidth that your server may face and this is just the start. Say you have videos;
 transloadit uploads, processes, encodes, crops, watermarks, exports, etc.
-Same for images, sounds, pdfs, rars and almost all. So you don&rsquo;t have to use gems,
-create an uploader classes, gridfs storages and lock your heroku dynos on upload times.
-It does all and provides you the link of the file. Yes it&rsquo;s paid(like 20$ a month) but when you compare it
-with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
+Same for images, sounds, pdfs, rars and almost all.
+You don&rsquo;t have to use carrierwave-imagemagick-paperclip, create an uploader classes,
+allocate gridfs storages and lock your heroku dynos on upload times.
+Some people integrate it with paperclip maybe for keeping the uploaded file on page after callback
+but I think its uncesesary &ndash; check my code you can sort that too.
+So don&rsquo;t even think about anything else, it does all and provides you the link of the file.
+Yes it&rsquo;s paid(like 20$ a month) but when you compare it with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
 
 <p>I had to create a system where user uploads videos and admin controls them.
-It&rsquo;s actually more complicated than that but knowing it will give you an idea.
-I used transloadit with jasny file uploader and flowplayer to make it happen.</p>
+It&rsquo;s actually more complicated than that but knowing that will give you an idea.</p>
 
 <p>We start with creating a template file on transloadit website. You just start with their free plan.
-Here is my template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
+Here is the template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
 of every video and exporting them to our s3 bucket.</p>
 
 <figure class='code'><figcaption><span>transloadit template</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -382,7 +384,7 @@ long json (params[:transloadit]). It has almost every details you can find about
 
 
 <p>This is special for my case. As you see I compare the metadata of the video I get from transloadit params.
-We assume that all uploaded videos have create dates. All videos coming from phones and electronic devices have them.
+We assume that all uploaded videos have create dates. All videos coming from phones and recording devices have them.
 I compare create date of the video and upload time with the event times.
 So transloadit enables me to check if the video has uploaded between specific times(start-end times of an event).</p>
 
@@ -466,7 +468,8 @@ So transloadit enables me to check if the video has uploaded between specific ti
 I have a partial with video, thumbnail carousel and accept-reject buttons in it.
 By the way if you discover owl-carousel you won&rsquo;t be using bootstrap carousel anymore.
 I won&rsquo;t go into detail of jquery partial updates, carousel and flowplayer integration since this post is about transloadit.
-Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.</p>
+Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.
+We did not need else conditions intentionally.</p>
 
 <figure class='code'><figcaption><span>admin/events/_show_adminevent.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -561,7 +564,9 @@ Check their websites for more information. I had to use coffescript inline becau
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here we go. Thank you for reading.</p>
+<p>Here we go.</p>
+
+<p><img src="http://dl.dropbox.com/u/47336405/Selection_045.png"></p>
 </div>
 
 
@@ -589,7 +594,7 @@ Check their websites for more information. I had to use coffescript inline becau
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/mongoid/'>Mongoid</a>, <a class='category' href='/blog/categories/rails/'>Rails</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/fileupload/'>fileupload</a>, <a class='category' href='/blog/categories/jasny/'>jasny</a>, <a class='category' href='/blog/categories/owl-carousel/'>owl carousel</a>, <a class='category' href='/blog/categories/transloadit/'>transloadit</a>
+    <a class='category' href='/blog/categories/mongoid/'>Mongoid</a>, <a class='category' href='/blog/categories/rails/'>Rails</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/fileupload/'>fileupload</a>, <a class='category' href='/blog/categories/flowplayer/'>flowplayer</a>, <a class='category' href='/blog/categories/jasny/'>jasny</a>, <a class='category' href='/blog/categories/owl-carousel/'>owl carousel</a>, <a class='category' href='/blog/categories/transloadit/'>transloadit</a>
   
 </span>
 
@@ -629,7 +634,7 @@ Check their websites for more information. I had to use coffescript inline becau
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/04/15/forget-about-carrierwave-and-paperclip/">Forget About Carrierwave and Paperclip</a>
+        <a href="/blog/2014/04/15/forget-about-carrierwave-and-paperclip/">Forget About Carrierwave and Paperclip, Use Transloadit</a>
       </li>
     
       <li class="post">
