@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mongoid | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/mongoid/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-04-09T23:21:47+03:00</updated>
+  <updated>2014-04-15T01:42:02+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner]]></name>
@@ -12,6 +12,332 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Forget About Carrierwave and Paperclip]]></title>
+    <link href="http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/"/>
+    <updated>2014-04-15T00:21:48+03:00</updated>
+    <id>http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip</id>
+    <content type="html"><![CDATA[<p>Today&rsquo;s post is about lovable transloadit. What is transloadit and why it is lovable? Well,
+if you have anything to upload then transloadit sorts out the processing, encoding
+and bandwidth that your server may face with and this is just the start. Say you have videos;
+transloadit uploads, processes, encodes, crops, watermarks, exports, etc.
+Same for images, sounds, pdfs, rars and almost all. So you don&rsquo;t have to use gems,
+create an uploader classes, gridfs storages and lock your heroku dynos on upload times.
+It does all and provides you the link of the file. Yes it&rsquo;s paid(like 20$ a month) but when you compare it
+with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
+
+<p>I had to create a system where user uploads videos and admin controls them.
+It&rsquo;s actually more complicated than that but knowing it will give you an idea.
+I used transloadit with jasny file uploader and flowplayer to make it happen.</p>
+
+<p>We start with creating a template file on transloadit website. You just start with their free plan.
+Here is my template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
+of every video and exporting them to our s3 bucket.</p>
+
+<p>``` json transloadit template</p>
+
+<p>{
+  &ldquo;steps&rdquo;: {</p>
+
+<pre><code>"iphone_video": {
+  "use": ":original",
+  "robot": "/video/encode",
+  "preset": "iphone",
+  "ffmpeg": {
+    "b": "120000K"
+  }
+},
+"thumbnails": {
+  "use": ":original",
+  "robot": "/video/thumbs",
+  "count": 25,
+  "width": 250,
+  "height": 250
+},
+"export": {
+  "robot": "/s3/store",
+  "use": [
+    "iphone_video",
+    "thumbnails"
+  ],
+  "key": "xxxxx",
+  "secret": "yyyyyy",
+  "bucket": "zzzzzz"
+}
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<p>transloadit gem  provides the necessary integration with Rails so I use it rather than the js library.</p>
+
+<p>``` ruby Gemfile</p>
+
+<p>gem &lsquo;transloadit-rails&rsquo;</p>
+
+<p>```</p>
+
+<p>The gem creates a yml file where we store our template details.
+The details can be found on transloadit website dashboard.</p>
+
+<p>``` ruby config/transloadit.yml</p>
+
+<p>development:
+  jquery_sdk_version: &lsquo;latest&rsquo;
+  auth:</p>
+
+<pre><code>key     : 'wwww'
+secret  : 'ssssss'
+duration: 1800 
+max_size: 52428800
+</code></pre>
+
+<p>  templates:</p>
+
+<pre><code>video_encode: "xxxxxxxxxxxxxx"
+</code></pre>
+
+<p>production:
+  jquery_sdk_version: &lsquo;latest&rsquo;
+  auth:</p>
+
+<pre><code>key     : 'wwww'
+secret  : 'ssssss'
+duration: 1800 
+max_size: 52428800
+</code></pre>
+
+<p>  templates:</p>
+
+<pre><code>video_encode: "xxxxxxxxxxxxxx"
+</code></pre>
+
+<p>```</p>
+
+<p>This is my form to upload files. Each apr has one jasny uploader.
+I intentionaly don&rsquo;t do multiple uploads here since the feature is making user upload one by one.
+Check how I place necessary transloadit codes. First refers to transloadit.yml and second refers to
+transloadit jquery uploader. Once the user selects the file, the form submits(triggeronselection =>true)
+and upload starts so you will see a progress bar(modal=>true). &ldquo;wait=>true&rdquo; means that I want transloadit to
+process the files after the upload finishes. Once its false it will just upload the file and queue the processing
+on their server so you can use hooks to get processed files.</p>
+
+<p>``` haml views/aprs/_form.html.haml</p>
+
+<h1>update_container</h1>
+
+<ul>
+<li>if @aprs.present?
+
+<ul>
+<li>@aprs.each_with_index do |apr,index| <br/>
+= bootstrap_form_for apr, :remote => true, html: { :id => &ldquo;showapr#{apr.id}&rdquo; , class: &lsquo;form-horizontal&rsquo; } do |f|
+  = f.error_messages
+  = hidden_field_tag :eventid, apr.event.id
+  = transloadit :video_encode
+  .fileupload.fileupload-new.pull-left{style: &ldquo;padding-right: 5px;&rdquo;, &ldquo;data-provides&rdquo; => &ldquo;fileupload&rdquo; }
+    .fileupload-new.thumbnail{:style => &ldquo;width: 130px; height: 130px;&rdquo;}
+
+<pre><code>  - if apr.upload.present?
+    - if apr.upload["thumbs"].present?                
+      %img{ :src =&gt; apr.upload["thumbs"][0]}/
+- if apr.event.app.check_user_failed == false &amp;&amp; (apr.event.start_time.day == Time.zone.now.day) 
+  .fileupload-preview.fileupload-exists.thumbnail{:style =&gt; "width: 130px; height: 130px;"}
+  %div
+    %span.btn.btn-file
+      %span.fileupload-new{:id =&gt; "selectbutton"}
+        =t('select_video')              
+      %span.fileupload-exists
+        =t('select_video')   
+      =f.file_field "upload#{apr.id}" , accept: 'video/flv,video/avi,video/mov,video/mp4,video/mpg,video/wmv,video/3gp,video/asf,video/rm,video/swf',  :data =&gt; {:max_file_size =&gt; 30.megabytes}
+  = transloadit_jquerify "showapr#{apr.id}", :wait =&gt; true, :modal=&gt;true, triggerUploadOnFileSelection: true
+</code></pre>
+
+<p>-else
+= label_tag :error_label, &ldquo;time doesn&rsquo;t fit to update time&rdquo;, class: &lsquo;control-label&rsquo;</p></li>
+</ul>
+</li>
+</ul>
+
+
+<p>```</p>
+
+<p>Here is my controller. I include the ParamsDecoder to make encoding work. Once the upload finishes you will get a
+long json (params[:transloadit]). It has almost every details you can find about the uploaded files.</p>
+
+<p>``` ruby controllers/aprs_controller.rb</p>
+
+<p>class AprsController &lt; ApplicationController
+  include Transloadit::Rails::ParamsDecoder
+  include AprsHelper</p>
+
+<p>  respond_to :html, :json</p>
+
+<p>  def update</p>
+
+<pre><code>app = App.where('events._id' =&gt; Moped::BSON::ObjectId(params[:eventid])).first
+unless  app.check_user_failed == true
+  event = app.events.detect { |pr| pr.id.to_s == params[:eventid] }
+  apr = event.aprs.detect { |pr| pr.id.to_s == params[:id] } 
+  isvalid = check_video_validity(params[:transloadit], event)
+  if isvalid == true
+    videos = transloadit_file_uploads(params[:transloadit], apr.upload)
+    if videos.present?
+      apr.upload = videos 
+    else
+      flash.now[:error] = "You've already uploaded a video"
+      return
+    end    
+    if apr.save  
+      blank = event.aprs.map{|evt| evt.upload; evt.upload.blank?}
+      unless blank.include? true
+        event.status = 4
+        event.save
+      end
+      respond_to do |format| 
+        @aprs = event.aprs 
+        format.js     
+      end
+    end
+  else
+     flash.now[:error] = "Time of upload is out of event times"
+     respond_to do |format| 
+      @aprs = nil
+      format.js     
+    end
+  end
+else
+  flash.now[:error] = "user failed"   
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>This is special for my case. As you see I compare the metadata of the video I get from transloadit params.
+We assume that all uploaded videos have create dates. All videos coming from phones and electronic devices have them.
+I compare create date of the video and upload time with the event times.
+So transloadit enables me to check if the video has uploaded between specific times(start-end times of an event).</p>
+
+<p>``` ruby helpers/aprs_helper.rb</p>
+
+<p> def check_video_validity(params, event)</p>
+
+<pre><code>check_hourly(params, event)
+</code></pre>
+
+<p>  end</p>
+
+<p>  def check_hourly(params, event)</p>
+
+<pre><code>date_created = params[:uploads][0][:meta][:date_file_created]
+start_time = event.start_time.in_time_zone
+end_time = event.end_time.in_time_zone
+upload_time =Time.parse(params[:last_job_completed]).in_time_zone
+valid = false  
+if date_created.present?  
+  if (date_created &gt;= start_time &amp;&amp; date_created &lt;= end_time) &amp;&amp;
+     (upload_time &gt;= start_time &amp;&amp; upload_time &lt;= end_time) 
+    valid = true
+  end
+end
+return valid
+</code></pre>
+
+<p>  end
+```</p>
+
+<p>Here is how I store the links on mongodb. &ldquo;upload&rdquo; is a mongoid hash field and things will be stored here.</p>
+
+<p>``` ruby helpers/aprs_helper.rb</p>
+
+<p>def transloadit_file_uploads(params, upload)</p>
+
+<pre><code>if (params[:results][:thumbnails].blank?)
+  return nil
+end
+if upload == nil 
+  upload= Hash.new {|h,k| h[k]=[]}   
+end 
+
+upload[:video] = params[:results][:iphone_video].first[:url]
+upload["thumbs"] = []    
+params[:results][:thumbnails].each do |thumb|         
+    upload["thumbs"] &lt;&lt; thumb[:url]
+end 
+return upload
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>So after the links get saved its time to show the videos with flowplayer.
+I have a partial with video, thumbnail carousel and accept-reject buttons in it.
+By the way if you discover owl-carousel you won&rsquo;t be using bootstrap carousel anymore.
+I won&rsquo;t go into detail of jquery partial updates, carousel and flowplayer integration since this post is about transloadit.
+Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.</p>
+
+<p>``` ruby admin/events/_show_adminevent.html.haml</p>
+
+<h1>update_container</h1>
+
+<p>  .row</p>
+
+<pre><code>.span8
+  - if @aprs.present?
+    - @aprs.each_with_index do |apr,index| 
+      = bootstrap_form_for apr,:remote =&gt; true, :url =&gt; admin_apr_path(apr.id) ,html: {:method =&gt; :put,  class: 'form-horizontal' } do |f|
+        = f.error_messages
+        %legend Set #{index+1}
+        %fieldset
+          .control-group
+            = label_tag :videos, t('.videos'), class: 'control-label'
+            .controls               
+              - if apr.upload.present?
+                .span8
+                  .player{"data-ratio" =&gt;"0.417", :id=&gt;"player_#{index}", :style=&gt;"background:#777 url(#{apr.upload["thumbs"].first}) no-repeat center;  background-size: cover;"}
+                    :coffee
+                      $("#player_#{index}").flowplayer
+                        ratio: 3/4
+                        splash: true
+                        rtmp: "rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st"
+                        playlist: [[mp4: "#{ apr.upload["video"]}"]]
+                      return
+          =hidden_field_tag "eventid", apr.event.id
+          .control-group
+            = label_tag :thumbnails, t('.thumbnails'), class: 'control-label'
+            .controls
+              - if apr.upload.present?
+                .span8
+                  .owl-demo.owl-carousel{:id=&gt;"thumbnails_#{index}"}
+                    - apr.upload["thumbs"].each_with_index do |thumb, index|
+                      .item
+                        %img.lazyOwl{alt: "",width:250, height:250, "data-src" =&gt; "#{thumb}"}/  
+                    :coffee
+                      $("#thumbnails_#{index}").owlCarousel
+                        items: 5
+                        lazyLoad: true
+                        navigation: true
+          .control-group
+            = label_tag :confirmation, t('.confirmation'), class: 'control-label'
+            .controls
+              - if apr.upload.present?
+                - if  apr.confirmations.find_by(:confirmed_user=&gt; current_user.id).present?
+                  - if  apr.confirmations.find_by(:confirmed_user=&gt; current_user.id).confirmed == true
+                    = f.submit "Accepted", name: "accept", class: 'btn btn-success' 
+                    = f.submit "Reject", class: 'btn' , data: { confirm: "Are you sure?" }
+</code></pre>
+
+<p>```</p>
+
+<p>Here we go. Thank you for reading.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Full Login System Out of Omniauth-identity With Mongoid and Jquery Validations]]></title>

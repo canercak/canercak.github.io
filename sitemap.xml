@@ -22,11 +22,17 @@
         <loc>
             http://canercak.github.io/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations/
         </loc>
-        <lastmod>2014-04-09T23:21:40+03:00</lastmod>
+        <lastmod>2014-04-15T00:46:30+03:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/
+        </loc>
+        <lastmod>2014-04-15T01:41:49+03:00</lastmod>
     </url>
     <url>
         <loc>http://canercak.github.io/blog/archives/</loc>
-        <lastmod>2014-04-09T23:21:40+03:00</lastmod>
+        <lastmod>2014-04-15T01:41:49+03:00</lastmod>
     </url>
     <url>
         <loc>http://canercak.github.io/robots.txt</loc>
@@ -34,6 +40,6 @@
     </url>
     <url>
         <loc>http://canercak.github.io/</loc>
-        <lastmod>2014-04-09T23:21:40+03:00</lastmod>
+        <lastmod>2014-04-15T01:41:49+03:00</lastmod>
     </url>
 </urlset>
