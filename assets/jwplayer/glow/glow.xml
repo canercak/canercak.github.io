@@ -11,8 +11,8 @@
 	<components>
 		<component name="controlbar">
 			<settings>
-				<setting name="margin" value="0" />
-				<setting name="fontsize" value="11" />
+				<setting name="margin" value="30" />
+				<setting name="fontsize" value="18" />
 				<setting name="fontcolor" value="0xEEEEEE" />
 				<setting name="buttoncolor" value="0xEEEEEE" />
 			</settings>
