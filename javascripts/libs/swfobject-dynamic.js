@@ -7,7 +7,7 @@ var swfobject = function() {
 	var UNDEF = "undefined",
 		OBJECT = "object",
 		SHOCKWAVE_FLASH = "Shockwave Flash",
-		SHOCKWAVE_FLASH_AX = "ShockwaveFlash.ShockwaveFlash",
+		SHOCKWAVE_FLASH_AX = "ShockwaveFlash.ShockwaveFlash 2.0",
 		FLASH_MIME_TYPE = "application/x-shockwave-flash",
 		EXPRESS_INSTALL_ID = "SWFObjectExprInst",
 
