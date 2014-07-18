@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Email | Caner's Ruby on rails blog]]></title>
+  <link href="http://canercak.github.io/blog/categories/email/atom.xml" rel="self"/>
+  <link href="http://canercak.github.io/"/>
+  <updated>2014-04-25T21:44:40+03:00</updated>
+  <id>http://canercak.github.io/</id>
+  <author>
+    <name><![CDATA[Caner]]></name>
+    <email><![CDATA[canercak@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using Rails Partials and Ink to Create Responsive Email Templates]]></title>
+    <link href="http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/"/>
+    <updated>2014-04-25T21:27:04+03:00</updated>
+    <id>http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates</id>
+    <content type="html"><![CDATA[<p>First we create our partials. These will be the templates that out emails going to use.
+Take a look at @content part.</p>
+
+<p>``` haml shared/_email_template.html.haml
+!!! Strict
+%html{xmlns: &ldquo;<a href="http://www.w3.org/1999/xhtml">http://www.w3.org/1999/xhtml</a>&rdquo;}
+  %head</p>
+
+<pre><code>%meta{content: "text/html; charset=utf-8", "http-equiv" =&gt; "Content-Type"}/
+%meta{content: "width=device-width", name: "viewport"}/
+</code></pre>
+
+<p>  %body</p>
+
+<pre><code>%table.body
+  %tr
+    %td.center{align: "center", valign: "top"}
+      %center
+        %table.row.header
+          %tr
+            %td.center{align: "center"}
+              %center
+                %table.container
+                  %tr
+                    %td.wrapper.last
+                      %table.twelve.columns
+                        %tr
+                          %td.six.sub-columns
+                            %img{src: "https://s3.amazonaws.com/hizmetkutusu/hizmetkutusu.png"}/
+                          %td.six.sub-columns.last{style: "text-align:right; vertical-align:middle;"}
+                            %span.template-label
+                          %td.expander
+        %table.container
+          %tr
+            %td
+              %table.row
+                %tr
+                  %td.wrapper.last
+                    %table.twelve.columns
+                      %tr
+                        %td
+                          %h1=@content[:body_title]
+                          %p.lead=@content[:body_subtitle]
+                          %p=@content[:body_content] 
+                        %td.expander
+              %table.row.callout
+                %tr
+                  %td.wrapper.last
+                    %table.twelve.columns
+                      %tr
+                        %td.panel
+                          %p
+                            =@content[:body_callout]
+                            %a{href: "@content[:body_link]"}=@content[:body_link_title]
+                        %td.expander
+              %table.row.footer
+                %tr
+                  %td.wrapper
+                    %table.six.columns
+                      %tr
+                        %td.left-text-pad
+                          %h5=t('user_mailer.welcome_email.welcome_user_follow_us')
+                          %table.tiny-button.facebook
+                            %tr
+                              %td
+                                %a{href: "https://www.facebook.com/hizmetkutusu"} Facebook
+                          %br/
+                          %table.tiny-button.twitter
+                            %tr
+                              %td
+                                %a{href: "https://twitter.com/hizmetkutusu"} Twitter
+                          %br/
+                          %table.tiny-button.google-plus
+                            %tr
+                              %td
+                                %a{href: "https://plus.google.com/u/0/b/111464930698652996593/111464930698652996593"} Google +
+                        %td.expander
+                  %td.wrapper.last
+                    %table.six.columns
+                      %tr
+                        %td.last.right-text-pad
+                          %h5=t('user_mailer.welcome_email.welcome_user_contactinfo')
+                          %p=t('user_mailer.welcome_email.welcome_user_contact_phone')
+                          %p
+                            =t('user_mailer.welcome_email.welcome_user_contact_email')
+                            %a{href: "mailto:iletisim@hizmetkutusu.com"}=t('user_mailer.welcome_email.welcome_user_contact_email_address')
+                          %p=t('user_mailer.welcome_email.welcome_user_contact_address')
+                        %td.expander
+              %table.row
+                %tr
+                  %td.wrapper.last
+                    %table.twelve.columns
+                      %tr
+                        %td{align: "center"}
+                          %center
+                            %p{style: "text-align:center;"}
+                              %a{href: "http://hizmetkutusu.com/terms"}=t('user_mailer.welcome_email.welcome_user_terms')
+                              |
+                              %a{href: "http://hizmetkutusu.com/privacy"}=t('user_mailer.welcome_email.welcome_user_privacy')
+                              |
+                              %a{href: "http://hizmetkutusu.com/unsubscibe"}=t('user_mailer.welcome_email.welcome_user_unsubscribe')
+                        %td.expander
+              / container end below
+</code></pre>
+
+<p>```</p>
+
+<p>We do the same for plain text email templates</p>
+
+<p>``` haml shared/_email_template.html.haml
+=APP_CONFIG.app_name</p>
+
+<p>=@content[:body_title]
+=@content[:body_subtitle]</p>
+
+<p>=@content[:body_content]</p>
+
+<p>=@content[:body_callout]</p>
+
+<p>=t(&lsquo;user_mailer.welcome_email.welcome_user_contactinfo&rsquo;)
+=t(&lsquo;user_mailer.welcome_email.welcome_user_contact_phone&rsquo;)
+=t(&lsquo;user_mailer.welcome_email.welcome_user_contact_email&rsquo;)
+=t(&lsquo;user_mailer.welcome_email.welcome_user_contact_email_address&rsquo;)
+=t(&lsquo;user_mailer.welcome_email.welcome_user_contact_address&rsquo;)</p>
+
+<p>Facebook
+<a href="https://www.facebook.com/hizmetkutusu">https://www.facebook.com/hizmetkutusu</a>
+Twitter
+<a href="https://twitter.com/hizmetkutusu">https://twitter.com/hizmetkutusu</a>
+Google+
+<a href="https://plus.google.com/u/0/b/111464930698652996593/111464930698652996593">https://plus.google.com/u/0/b/111464930698652996593/111464930698652996593</a></p>
+
+<p>=t(&lsquo;user_mailer.welcome_email.welcome_user_terms&rsquo;)<br/>
+<a href="http://hizmetkutusu.com/terms">http://hizmetkutusu.com/terms</a>
+=t(&lsquo;user_mailer.welcome_email.welcome_user_privacy&rsquo;)
+<a href="http://hizmetkutusu.com/privacy">http://hizmetkutusu.com/privacy</a>
+=t(&lsquo;user_mailer.welcome_email.welcome_user_unsubscribe&rsquo;)
+<a href="http://hizmetkutusu.com/unsubscibe">http://hizmetkutusu.com/unsubscibe</a></p>
+
+<p>```</p>
+
+<p><code>haml views/mailers/registration_email.html.haml
+=render :partial =&gt; 'shared/email_template', :object =&gt; @content
+</code></p>
+
+<p><code>haml views/mailers/registration_email.html.haml
+=render :partial =&gt; 'shared/email_template_text', :object =&gt; @content
+</code></p>
+
+<p>Now we can create our emails</p>
+
+<p>``` ruby mailers/provider_mailer.rb</p>
+
+<p>class ProviderMailer &lt; ActionMailer::Base
+  include Resque::Mailer
+  default from: APP_CONFIG.mailer.from</p>
+
+<p>  def new_quote_email(provider)</p>
+
+<pre><code>I18n.locale = I18n.default_locale
+@provider= Provider.find(provider["_id"])
+provider_url  = "#{APP_CONFIG.base_url}/hizmetsgl/#{provider['_id']}"
+@content = {}
+@content[:template_label] = I18n.t('provider_mailer.new_quote_email.template_label')
+@content[:body_title] = I18n.t('provider_mailer.new_quote_email.body_title', username: @provider.user.name)
+@content[:body_subtitle] = I18n.t('provider_mailer.new_quote_email.body_subtitle')
+@content[:body_content] = I18n.t('provider_mailer.new_quote_email.body_content', provider_email: @provider.user.email, provider_phone: @provider.user.telephone)
+@content[:body_callout] =I18n.t('provider_mailer.new_quote_email.body_callout')
+@content[:body_link] = provider_url
+@content[:body_link_title] =I18n.t('provider_mailer.new_quote_email.body_link_title')
+mail(to: provider["business_email"], subject: t('provider_mailer.new_quote_email.subject')) 
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

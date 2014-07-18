@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using Rails Partials and Ink to Create Responsive Email Templates - Caner's Ruby on rails blog</title>
+  <meta name="author" content="Caner">
+
+  
+  <meta name="description" content="Today's post is about using Rails partials to create responsive email templates. 
+  I had to send more than 5 different emails so I decided to create a standard template that includes the responsve css, 
+  my contact details and a @content variable to place text into specific parts of the mail.
+  First we create our partials. These will be the templates that out emails going to use. Take a look at @content part. shared/_email_template.html. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Caner's Ruby on rails blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Caner's Ruby on rails blog</a></h1>
+  
+    <h2>It's all about the beauty of Ruby. I'm not a "Guru", not a "Rock Star" or "Ninja" at all. But I can do every single thing I need and I enjoy so much because I'm in love with her beauty.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:canercak.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using Rails Partials and Ink to Create Responsive Email Templates</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T21:27:04+03:00" pubdate data-updated="true">Apr 25<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://canercak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Today's post is about creating responsive email templates using Rails partial and responsive Ink mail templates.
+I'm writing this post because I usually get emails that I can't see clearly on my Iphone. I thoufht it shouldn't be hard to do it so I did it.
+First we create our partials. These will be the templates that out emails going to use. Take a look at @content part.</p>
+
+<figure class='code'><figcaption><span>shared/_email_template.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nn">!!! Strict</span>
+</span><span class='line'><span class="nt">%html</span><span class="p">{</span><span class="ss">xmlns</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nt">%head</span>
+</span><span class='line'>    <span class="nt">%meta</span><span class="p">{</span><span class="ss">content</span><span class="p">:</span> <span class="s2">&quot;text/html; charset=utf-8&quot;</span><span class="p">,</span> <span class="s2">&quot;http-equiv&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">}/</span>
+</span><span class='line'>    <span class="nt">%meta</span><span class="p">{</span><span class="ss">content</span><span class="p">:</span> <span class="s2">&quot;width=device-width&quot;</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;viewport&quot;</span><span class="p">}/</span>
+</span><span class='line'>  <span class="nt">%body</span>
+</span><span class='line'>    <span class="nt">%table</span><span class="nc">.body</span>
+</span><span class='line'>      <span class="nt">%tr</span>
+</span><span class='line'>        <span class="nt">%td</span><span class="nc">.center</span><span class="p">{</span><span class="ss">align</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="ss">valign</span><span class="p">:</span> <span class="s2">&quot;top&quot;</span><span class="p">}</span>
+</span><span class='line'>          <span class="nt">%center</span>
+</span><span class='line'>            <span class="nt">%table</span><span class="nc">.row.header</span>
+</span><span class='line'>              <span class="nt">%tr</span>
+</span><span class='line'>                <span class="nt">%td</span><span class="nc">.center</span><span class="p">{</span><span class="ss">align</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
+</span><span class='line'>                  <span class="nt">%center</span>
+</span><span class='line'>                    <span class="nt">%table</span><span class="nc">.container</span>
+</span><span class='line'>                      <span class="nt">%tr</span>
+</span><span class='line'>                        <span class="nt">%td</span><span class="nc">.wrapper.last</span>
+</span><span class='line'>                          <span class="nt">%table</span><span class="nc">.twelve.columns</span>
+</span><span class='line'>                            <span class="nt">%tr</span>
+</span><span class='line'>                              <span class="nt">%td</span><span class="nc">.six.sub-columns</span>
+</span><span class='line'>                                <span class="nt">%img</span><span class="p">{</span><span class="ss">src</span><span class="p">:</span> <span class="s2">&quot;https://s3.amazonaws.com/hizmetkutusu/hizmetkutusu.png&quot;</span><span class="p">}/</span>
+</span><span class='line'>                              <span class="nt">%td</span><span class="nc">.six.sub-columns.last</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span> <span class="s2">&quot;text-align:right; vertical-align:middle;&quot;</span><span class="p">}</span>
+</span><span class='line'>                                <span class="nt">%span</span><span class="nc">.template-label</span>
+</span><span class='line'>                              <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>            <span class="nt">%table</span><span class="nc">.container</span>
+</span><span class='line'>              <span class="nt">%tr</span>
+</span><span class='line'>                <span class="nt">%td</span>
+</span><span class='line'>                  <span class="nt">%table</span><span class="nc">.row</span>
+</span><span class='line'>                    <span class="nt">%tr</span>
+</span><span class='line'>                      <span class="nt">%td</span><span class="nc">.wrapper.last</span>
+</span><span class='line'>                        <span class="nt">%table</span><span class="nc">.twelve.columns</span>
+</span><span class='line'>                          <span class="nt">%tr</span>
+</span><span class='line'>                            <span class="nt">%td</span>
+</span><span class='line'>                              <span class="nt">%h1</span><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_title</span><span class="o">]</span>
+</span><span class='line'>                              <span class="nt">%p</span><span class="nc">.lead</span><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_subtitle</span><span class="o">]</span>
+</span><span class='line'>                              <span class="nt">%p</span><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_content</span><span class="o">]</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>                  <span class="nt">%table</span><span class="nc">.row.callout</span>
+</span><span class='line'>                    <span class="nt">%tr</span>
+</span><span class='line'>                      <span class="nt">%td</span><span class="nc">.wrapper.last</span>
+</span><span class='line'>                        <span class="nt">%table</span><span class="nc">.twelve.columns</span>
+</span><span class='line'>                          <span class="nt">%tr</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.panel</span>
+</span><span class='line'>                              <span class="nt">%p</span>
+</span><span class='line'>                                <span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_callout</span><span class="o">]</span>
+</span><span class='line'>                                <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;@content[:body_link]&quot;</span><span class="p">}=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_link_title</span><span class="o">]</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>                  <span class="nt">%table</span><span class="nc">.row.footer</span>
+</span><span class='line'>                    <span class="nt">%tr</span>
+</span><span class='line'>                      <span class="nt">%td</span><span class="nc">.wrapper</span>
+</span><span class='line'>                        <span class="nt">%table</span><span class="nc">.six.columns</span>
+</span><span class='line'>                          <span class="nt">%tr</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.left-text-pad</span>
+</span><span class='line'>                              <span class="nt">%h5</span><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_follow_us&#39;</span><span class="p">)</span>
+</span><span class='line'>                              <span class="nt">%table</span><span class="nc">.tiny-button.facebook</span>
+</span><span class='line'>                                <span class="nt">%tr</span>
+</span><span class='line'>                                  <span class="nt">%td</span>
+</span><span class='line'>                                    <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;https://www.facebook.com/hizmetkutusu&quot;</span><span class="p">}</span> Facebook
+</span><span class='line'>                              <span class="nt">%br</span><span class="p">/</span>
+</span><span class='line'>                              <span class="nt">%table</span><span class="nc">.tiny-button.twitter</span>
+</span><span class='line'>                                <span class="nt">%tr</span>
+</span><span class='line'>                                  <span class="nt">%td</span>
+</span><span class='line'>                                    <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;https://twitter.com/hizmetkutusu&quot;</span><span class="p">}</span> Twitter
+</span><span class='line'>                              <span class="nt">%br</span><span class="p">/</span>
+</span><span class='line'>                              <span class="nt">%table</span><span class="nc">.tiny-button.google-plus</span>
+</span><span class='line'>                                <span class="nt">%tr</span>
+</span><span class='line'>                                  <span class="nt">%td</span>
+</span><span class='line'>                                    <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;https://plus.google.com/u/0/b/111464930698652996593/111464930698652996593&quot;</span><span class="p">}</span> Google +
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>                      <span class="nt">%td</span><span class="nc">.wrapper.last</span>
+</span><span class='line'>                        <span class="nt">%table</span><span class="nc">.six.columns</span>
+</span><span class='line'>                          <span class="nt">%tr</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.last.right-text-pad</span>
+</span><span class='line'>                              <span class="nt">%h5</span><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contactinfo&#39;</span><span class="p">)</span>
+</span><span class='line'>                              <span class="nt">%p</span><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_phone&#39;</span><span class="p">)</span>
+</span><span class='line'>                              <span class="nt">%p</span>
+</span><span class='line'>                                <span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_email&#39;</span><span class="p">)</span>
+</span><span class='line'>                                <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;mailto:iletisim@hizmetkutusu.com&quot;</span><span class="p">}=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_email_address&#39;</span><span class="p">)</span>
+</span><span class='line'>                              <span class="nt">%p</span><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_address&#39;</span><span class="p">)</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>                  <span class="nt">%table</span><span class="nc">.row</span>
+</span><span class='line'>                    <span class="nt">%tr</span>
+</span><span class='line'>                      <span class="nt">%td</span><span class="nc">.wrapper.last</span>
+</span><span class='line'>                        <span class="nt">%table</span><span class="nc">.twelve.columns</span>
+</span><span class='line'>                          <span class="nt">%tr</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="p">{</span><span class="ss">align</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
+</span><span class='line'>                              <span class="nt">%center</span>
+</span><span class='line'>                                <span class="nt">%p</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span> <span class="s2">&quot;text-align:center;&quot;</span><span class="p">}</span>
+</span><span class='line'>                                  <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;http://hizmetkutusu.com/terms&quot;</span><span class="p">}=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_terms&#39;</span><span class="p">)</span>
+</span><span class='line'>                                  |
+</span><span class='line'>                                  <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;http://hizmetkutusu.com/privacy&quot;</span><span class="p">}=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_privacy&#39;</span><span class="p">)</span>
+</span><span class='line'>                                  |
+</span><span class='line'>                                  <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;http://hizmetkutusu.com/unsubscibe&quot;</span><span class="p">}=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_unsubscribe&#39;</span><span class="p">)</span>
+</span><span class='line'>                            <span class="nt">%td</span><span class="nc">.expander</span>
+</span><span class='line'>                  <span class="c">/ container end below</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We do the same for plain text email templates</p>
+
+<figure class='code'><figcaption><span>shared/_email_template.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="p">=</span><span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">app_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_title</span><span class="o">]</span>
+</span><span class='line'><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_subtitle</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_content</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span><span class="vi">@content</span><span class="o">[</span><span class="ss">:body_callout</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contactinfo&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_phone&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_email&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_email_address&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_contact_address&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>Facebook
+</span><span class='line'>https://www.facebook.com/hizmetkutusu
+</span><span class='line'>Twitter
+</span><span class='line'>https://twitter.com/hizmetkutusu
+</span><span class='line'>Google+
+</span><span class='line'>https://plus.google.com/u/0/b/111464930698652996593/111464930698652996593
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_terms&#39;</span><span class="p">)</span>
+</span><span class='line'>http://hizmetkutusu.com/terms
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_privacy&#39;</span><span class="p">)</span>
+</span><span class='line'>http://hizmetkutusu.com/privacy
+</span><span class='line'><span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.welcome_email.welcome_user_unsubscribe&#39;</span><span class="p">)</span>
+</span><span class='line'>http://hizmetkutusu.com/unsubscibe
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>views/mailers/registration_email.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="p">=</span><span class="n">render</span> <span class="ss">:partial</span> <span class="o">=&gt;</span> <span class="s1">&#39;shared/email_template&#39;</span><span class="p">,</span> <span class="ss">:object</span> <span class="o">=&gt;</span> <span class="vi">@content</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>views/mailers/registration_email.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="p">=</span><span class="n">render</span> <span class="ss">:partial</span> <span class="o">=&gt;</span> <span class="s1">&#39;shared/email_template_text&#39;</span><span class="p">,</span> <span class="ss">:object</span> <span class="o">=&gt;</span> <span class="vi">@content</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can create our emails</p>
+
+<figure class='code'><figcaption><span>mailers/provider_mailer.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ProviderMailer</span> <span class="o">&lt;</span> <span class="ss">ActionMailer</span><span class="p">:</span><span class="ss">:Base</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Resque</span><span class="p">:</span><span class="ss">:Mailer</span>
+</span><span class='line'>  <span class="n">default</span> <span class="ss">from</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">mailer</span><span class="o">.</span><span class="n">from</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">new_quote_email</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">I18n</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="no">I18n</span><span class="o">.</span><span class="n">default_locale</span>
+</span><span class='line'>    <span class="vi">@provider</span><span class="o">=</span> <span class="no">Provider</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">provider</span><span class="o">[</span><span class="s2">&quot;_id&quot;</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">provider_url</span>  <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/hizmetsgl/</span><span class="si">#{</span><span class="n">provider</span><span class="o">[</span><span class="s1">&#39;_id&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="vi">@content</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:template_label</span><span class="o">]</span> <span class="o">=</span> <span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.template_label&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_title</span><span class="o">]</span> <span class="o">=</span> <span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.body_title&#39;</span><span class="p">,</span> <span class="ss">username</span><span class="p">:</span> <span class="vi">@provider</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_subtitle</span><span class="o">]</span> <span class="o">=</span> <span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.body_subtitle&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_content</span><span class="o">]</span> <span class="o">=</span> <span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.body_content&#39;</span><span class="p">,</span> <span class="n">provider_email</span><span class="p">:</span> <span class="vi">@provider</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">provider_phone</span><span class="p">:</span> <span class="vi">@provider</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">telephone</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_callout</span><span class="o">]</span> <span class="o">=</span><span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.body_callout&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_link</span><span class="o">]</span> <span class="o">=</span> <span class="n">provider_url</span>
+</span><span class='line'>    <span class="vi">@content</span><span class="o">[</span><span class="ss">:body_link_title</span><span class="o">]</span> <span class="o">=</span><span class="no">I18n</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.body_link_title&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">mail</span><span class="p">(</span><span class="ss">to</span><span class="p">:</span> <span class="n">provider</span><span class="o">[</span><span class="s2">&quot;business_email&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;provider_mailer.new_quote_email.subject&#39;</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Caner</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T21:27:04+03:00" pubdate data-updated="true">Apr 25<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rails/'>Rails</a>, <a class='category' href='/blog/categories/actionmailer/'>actionmailer</a>, <a class='category' href='/blog/categories/email/'>email</a>, <a class='category' href='/blog/categories/ink/'>ink</a>, <a class='category' href='/blog/categories/partial/'>partial</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/" data-via="" data-counturl="http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/15/forget-about-carrierwave-and-paperclip/" title="Previous Post: forget about carrierwave and paperclip, use transloadit">&laquo; forget about carrierwave and paperclip, use transloadit</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/">Using Rails Partials and Ink to Create Responsive Email Templates</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/15/forget-about-carrierwave-and-paperclip/">Forget About Carrierwave and Paperclip, Use Transloadit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations/">Full Login System Out of Omniauth-identity With Mongoid and Jquery Validations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/03/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Continuously Collecting User Facebook Data for Mongoid Application Using Omniauth, Facebook, Koala and Resque</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Caner -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'canerblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/';
+        var disqus_url = 'http://canercak.github.io/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

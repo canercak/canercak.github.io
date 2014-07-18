@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Forget About Carrierwave and Paperclip, Use Transloadit - Caner's Ruby on rails blog</title>
+  <meta name="author" content="Caner">
+
+  
+  <meta name="description" content="Today&rsquo;s post is about lovable transloadit. What is transloadit and why it is lovable? Well,
+if you have anything to upload then transloadit &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Caner's Ruby on rails blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Caner's Ruby on rails blog</a></h1>
+  
+    <h2>It's all about the beauty of Ruby. I'm not a "Guru", not a "Rock Star" or "Ninja" at all. But I can do every single thing I need and I enjoy so much because I'm in love with her beauty.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:canercak.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Forget About Carrierwave and Paperclip, Use Transloadit</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-15T00:21:48+03:00" pubdate data-updated="true">Apr 15<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://canercak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Today&rsquo;s post is about lovable transloadit. What is transloadit and why it is lovable? Well,
+if you have anything to upload then transloadit sorts out the processing, encoding
+,bandwidth that your server may face and this is just the start. Say you have videos;
+transloadit uploads, processes, encodes, crops, watermarks, exports, etc.
+Same for images, sounds, pdfs, rars and almost all.
+You don&rsquo;t have to use carrierwave-imagemagick-paperclip, create an uploader classes,
+allocate gridfs storages and lock your heroku dynos on upload times.
+Some people integrate it with paperclip maybe for keeping the uploaded file on page after callback
+but I think its uncesesary &ndash; check my code you can sort that too.
+So don&rsquo;t even think about anything else, it does all and provides you the link of the file.
+Yes it&rsquo;s paid(like 20$ a month) but when you compare it with your server costs and the hassle of dealing with files it will definetely be cheaper.</p>
+
+<p>I had to create a system where user uploads videos and admin controls them.
+It&rsquo;s actually more complicated than that but knowing that will give you an idea.</p>
+
+<p>We start with creating a template file on transloadit website. You just start with their free plan.
+Here is the template that I created on their wesite. I&rsquo;m encoidng iphone videos,taking out 25 thumbnails out
+of every video and exporting them to our s3 bucket.</p>
+
+<figure class='code'><figcaption><span>transloadit template</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;steps&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;iphone_video&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;use&quot;</span><span class="p">:</span> <span class="s2">&quot;:original&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;robot&quot;</span><span class="p">:</span> <span class="s2">&quot;/video/encode&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;preset&quot;</span><span class="p">:</span> <span class="s2">&quot;iphone&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;ffmpeg&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;120000K&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;thumbnails&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;use&quot;</span><span class="p">:</span> <span class="s2">&quot;:original&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;robot&quot;</span><span class="p">:</span> <span class="s2">&quot;/video/thumbs&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">250</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nt">&quot;export&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;robot&quot;</span><span class="p">:</span> <span class="s2">&quot;/s3/store&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;use&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s2">&quot;iphone_video&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;thumbnails&quot;</span>
+</span><span class='line'>      <span class="p">],</span>
+</span><span class='line'>      <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;xxxxx&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;yyyyyy&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;bucket&quot;</span><span class="p">:</span> <span class="s2">&quot;zzzzzz&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>transloadit gem  provides the necessary integration with Rails so I use it rather than the js library.</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;transloadit-rails&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The gem creates a yml file where we store our template details.
+The details can be found on transloadit website dashboard.</p>
+
+<figure class='code'><figcaption><span>config/transloadit.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">development</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">jquery_sdk_version</span><span class="p">:</span> <span class="s1">&#39;latest&#39;</span>
+</span><span class='line'>  <span class="ss">auth</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">key</span>     <span class="p">:</span> <span class="s1">&#39;wwww&#39;</span>
+</span><span class='line'>    <span class="n">secret</span>  <span class="p">:</span> <span class="s1">&#39;ssssss&#39;</span>
+</span><span class='line'>    <span class="ss">duration</span><span class="p">:</span> <span class="mi">1800</span>
+</span><span class='line'>    <span class="n">max_size</span><span class="p">:</span> <span class="mi">52428800</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="ss">templates</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">video_encode</span><span class="p">:</span> <span class="s2">&quot;xxxxxxxxxxxxxx&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">jquery_sdk_version</span><span class="p">:</span> <span class="s1">&#39;latest&#39;</span>
+</span><span class='line'>  <span class="ss">auth</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">key</span>     <span class="p">:</span> <span class="s1">&#39;wwww&#39;</span>
+</span><span class='line'>    <span class="n">secret</span>  <span class="p">:</span> <span class="s1">&#39;ssssss&#39;</span>
+</span><span class='line'>    <span class="ss">duration</span><span class="p">:</span> <span class="mi">1800</span>
+</span><span class='line'>    <span class="n">max_size</span><span class="p">:</span> <span class="mi">52428800</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="ss">templates</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">video_encode</span><span class="p">:</span> <span class="s2">&quot;xxxxxxxxxxxxxx&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is my form to upload files. Each apr has one jasny uploader.
+I intentionaly don&rsquo;t do multiple uploads here since the feature is making user upload one by one.
+Check how I place necessary transloadit codes. First refers to transloadit.yml and second refers to
+transloadit jquery uploader. Once the user selects the file, the form submits(triggeronselection =>true)
+and upload starts so you will see a progress bar(modal=>true). &ldquo;wait=>true&rdquo; means that I want transloadit to
+process the files after the upload finishes. Once its false it will just upload the file and queue the processing
+on their server so you can use hooks to get processed files.</p>
+
+<figure class='code'><figcaption><span>views/aprs/_form.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nf">#update_container</span>
+</span><span class='line'>  <span class="p">-</span> <span class="k">if</span> <span class="vi">@aprs</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>    <span class="p">-</span> <span class="vi">@aprs</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">apr</span><span class="p">,</span><span class="n">index</span><span class="o">|</span>
+</span><span class='line'>      <span class="p">=</span> <span class="n">bootstrap_form_for</span> <span class="n">apr</span><span class="p">,</span> <span class="ss">:remote</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">html</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="s2">&quot;showapr</span><span class="si">#{</span><span class="n">apr</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;form-horizontal&#39;</span> <span class="p">}</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>        <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">error_messages</span>
+</span><span class='line'>        <span class="p">=</span> <span class="n">hidden_field_tag</span> <span class="ss">:eventid</span><span class="p">,</span> <span class="n">apr</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>        <span class="p">=</span> <span class="n">transloadit</span> <span class="ss">:video_encode</span>
+</span><span class='line'>        <span class="nc">.fileupload.fileupload-new.pull-left</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span> <span class="s2">&quot;padding-right: 5px;&quot;</span><span class="p">,</span> <span class="s2">&quot;data-provides&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;fileupload&quot;</span> <span class="p">}</span>
+</span><span class='line'>          <span class="nc">.fileupload-new.thumbnail</span><span class="p">{</span><span class="ss">:style</span> <span class="o">=&gt;</span> <span class="s2">&quot;width: 130px; height: 130px;&quot;</span><span class="p">}</span>
+</span><span class='line'>            <span class="p">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>              <span class="p">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">].</span><span class="n">present?</span>
+</span><span class='line'>                <span class="nt">%img</span><span class="p">{</span> <span class="ss">:src</span> <span class="o">=&gt;</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span><span class="p">}/</span>
+</span><span class='line'>          <span class="p">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">check_user_failed</span> <span class="o">==</span> <span class="kp">false</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">apr</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="no">Time</span><span class="o">.</span><span class="n">zone</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+</span><span class='line'>            <span class="nc">.fileupload-preview.fileupload-exists.thumbnail</span><span class="p">{</span><span class="ss">:style</span> <span class="o">=&gt;</span> <span class="s2">&quot;width: 130px; height: 130px;&quot;</span><span class="p">}</span>
+</span><span class='line'>            <span class="nt">%div</span>
+</span><span class='line'>              <span class="nt">%span</span><span class="nc">.btn.btn-file</span>
+</span><span class='line'>                <span class="nt">%span</span><span class="nc">.fileupload-new</span><span class="p">{</span><span class="ss">:id</span> <span class="o">=&gt;</span> <span class="s2">&quot;selectbutton&quot;</span><span class="p">}</span>
+</span><span class='line'>                  <span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;select_video&#39;</span><span class="p">)</span>
+</span><span class='line'>                <span class="nt">%span</span><span class="nc">.fileupload-exists</span>
+</span><span class='line'>                  <span class="p">=</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;select_video&#39;</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">=</span><span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="s2">&quot;upload</span><span class="si">#{</span><span class="n">apr</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="ss">accept</span><span class="p">:</span> <span class="s1">&#39;video/flv,video/avi,video/mov,video/mp4,video/mpg,video/wmv,video/3gp,video/asf,video/rm,video/swf&#39;</span><span class="p">,</span>  <span class="ss">:data</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:max_file_size</span> <span class="o">=&gt;</span> <span class="mi">30</span><span class="o">.</span><span class="n">megabytes</span><span class="p">}</span>
+</span><span class='line'>            <span class="p">=</span> <span class="n">transloadit_jquerify</span> <span class="s2">&quot;showapr</span><span class="si">#{</span><span class="n">apr</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">:modal</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">,</span> <span class="ss">triggerUploadOnFileSelection</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>  <span class="p">-</span><span class="k">else</span>
+</span><span class='line'>    <span class="p">=</span> <span class="n">label_tag</span> <span class="ss">:error_label</span><span class="p">,</span> <span class="s2">&quot;time doesn&#39;t fit to update time&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here is my controller. I include the ParamsDecoder to make encoding work. Once the upload finishes you will get a
+long json (params[:transloadit]). It has almost every details you can find about the uploaded files.</p>
+
+<figure class='code'><figcaption><span>controllers/aprs_controller.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AprsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Transloadit</span><span class="p">:</span><span class="ss">:Rails</span><span class="o">::</span><span class="no">ParamsDecoder</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">AprsHelper</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update</span>
+</span><span class='line'>    <span class="n">app</span> <span class="o">=</span> <span class="no">App</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;events._id&#39;</span> <span class="o">=&gt;</span> <span class="ss">Moped</span><span class="p">:</span><span class="ss">:BSON</span><span class="o">::</span><span class="no">ObjectId</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:eventid</span><span class="o">]</span><span class="p">))</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>    <span class="k">unless</span>  <span class="n">app</span><span class="o">.</span><span class="n">check_user_failed</span> <span class="o">==</span> <span class="kp">true</span>
+</span><span class='line'>      <span class="n">event</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">detect</span> <span class="p">{</span> <span class="o">|</span><span class="n">pr</span><span class="o">|</span> <span class="n">pr</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="n">params</span><span class="o">[</span><span class="ss">:eventid</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">apr</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">aprs</span><span class="o">.</span><span class="n">detect</span> <span class="p">{</span> <span class="o">|</span><span class="n">pr</span><span class="o">|</span> <span class="n">pr</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">isvalid</span> <span class="o">=</span> <span class="n">check_video_validity</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:transloadit</span><span class="o">]</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">isvalid</span> <span class="o">==</span> <span class="kp">true</span>
+</span><span class='line'>        <span class="n">videos</span> <span class="o">=</span> <span class="n">transloadit_file_uploads</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:transloadit</span><span class="o">]</span><span class="p">,</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">videos</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>          <span class="n">apr</span><span class="o">.</span><span class="n">upload</span> <span class="o">=</span> <span class="n">videos</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve already uploaded a video&quot;</span>
+</span><span class='line'>          <span class="k">return</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>          <span class="n">blank</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">aprs</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">evt</span><span class="o">|</span> <span class="n">evt</span><span class="o">.</span><span class="n">upload</span><span class="p">;</span> <span class="n">evt</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">blank?</span><span class="p">}</span>
+</span><span class='line'>          <span class="k">unless</span> <span class="n">blank</span><span class="o">.</span><span class="n">include?</span> <span class="kp">true</span>
+</span><span class='line'>            <span class="n">event</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class='line'>            <span class="n">event</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>          <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>            <span class="vi">@aprs</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">aprs</span>
+</span><span class='line'>            <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>         <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Time of upload is out of event times&quot;</span>
+</span><span class='line'>         <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>          <span class="vi">@aprs</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>          <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;user failed&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is special for my case. As you see I compare the metadata of the video I get from transloadit params.
+We assume that all uploaded videos have create dates. All videos coming from phones and recording devices have them.
+I compare create date of the video and upload time with the event times.
+So transloadit enables me to check if the video has uploaded between specific times(start-end times of an event).</p>
+
+<figure class='code'><figcaption><span>helpers/aprs_helper.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="k">def</span> <span class="nf">check_video_validity</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">check_hourly</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">check_hourly</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">date_created</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:uploads</span><span class="o">][</span><span class="mi">0</span><span class="o">][</span><span class="ss">:meta</span><span class="o">][</span><span class="ss">:date_file_created</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">start_time</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">in_time_zone</span>
+</span><span class='line'>    <span class="n">end_time</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">in_time_zone</span>
+</span><span class='line'>    <span class="n">upload_time</span> <span class="o">=</span><span class="no">Time</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:last_job_completed</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">in_time_zone</span>
+</span><span class='line'>    <span class="n">valid</span> <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">date_created</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">date_created</span> <span class="o">&gt;=</span> <span class="n">start_time</span> <span class="o">&amp;&amp;</span> <span class="n">date_created</span> <span class="o">&lt;=</span> <span class="n">end_time</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span><span class='line'>         <span class="p">(</span><span class="n">upload_time</span> <span class="o">&gt;=</span> <span class="n">start_time</span> <span class="o">&amp;&amp;</span> <span class="n">upload_time</span> <span class="o">&lt;=</span> <span class="n">end_time</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">valid</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">valid</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here is how I store the links on mongodb. &ldquo;upload&rdquo; is a mongoid hash field and things will be stored here.</p>
+
+<figure class='code'><figcaption><span>helpers/aprs_helper.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">transloadit_file_uploads</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">upload</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:results</span><span class="o">][</span><span class="ss">:thumbnails</span><span class="o">].</span><span class="n">blank?</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kp">nil</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="kp">nil</span>
+</span><span class='line'>      <span class="n">upload</span><span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span><span class="o">|</span><span class="n">h</span><span class="p">,</span><span class="n">k</span><span class="o">|</span> <span class="n">h</span><span class="o">[</span><span class="n">k</span><span class="o">]=[]</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">upload</span><span class="o">[</span><span class="ss">:video</span><span class="o">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:results</span><span class="o">][</span><span class="ss">:iphone_video</span><span class="o">].</span><span class="n">first</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="n">params</span><span class="o">[</span><span class="ss">:results</span><span class="o">][</span><span class="ss">:thumbnails</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">thumb</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="n">thumb</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">upload</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So after the links get saved its time to show the videos with flowplayer.
+I have a partial with video, thumbnail carousel and accept-reject buttons in it.
+By the way if you discover owl-carousel you won&rsquo;t be using bootstrap carousel anymore.
+I won&rsquo;t go into detail of jquery partial updates, carousel and flowplayer integration since this post is about transloadit.
+Check their websites for more information. I had to use coffescript inline because of variables used in partials. You can take out the js parts outside for sure.
+We did not need else conditions intentionally.</p>
+
+<figure class='code'><figcaption><span>admin/events/_show_adminevent.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#update_container</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">row</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">span8</span>
+</span><span class='line'>      <span class="o">-</span> <span class="k">if</span> <span class="vi">@aprs</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="o">-</span> <span class="vi">@aprs</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">apr</span><span class="p">,</span><span class="n">index</span><span class="o">|</span>
+</span><span class='line'>          <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="n">apr</span><span class="p">,</span><span class="ss">:remote</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="n">admin_apr_path</span><span class="p">(</span><span class="n">apr</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">,</span><span class="ss">html</span><span class="p">:</span> <span class="p">{</span><span class="ss">:method</span> <span class="o">=&gt;</span> <span class="ss">:put</span><span class="p">,</span>  <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;form-horizontal&#39;</span> <span class="p">}</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">error_messages</span>
+</span><span class='line'>            <span class="o">%</span><span class="n">legend</span> <span class="no">Set</span> <span class="c1">#{index+1}</span>
+</span><span class='line'>            <span class="o">%</span><span class="n">fieldset</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>                <span class="o">=</span> <span class="n">label_tag</span> <span class="ss">:videos</span><span class="p">,</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.videos&#39;</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">controls</span>
+</span><span class='line'>                  <span class="o">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>                    <span class="o">.</span><span class="n">span8</span>
+</span><span class='line'>                      <span class="o">.</span><span class="n">player</span><span class="p">{</span><span class="s2">&quot;data-ratio&quot;</span> <span class="o">=&gt;</span><span class="s2">&quot;0.417&quot;</span><span class="p">,</span> <span class="ss">:id</span><span class="o">=&gt;</span><span class="s2">&quot;player_</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ss">:style</span><span class="o">=&gt;</span><span class="s2">&quot;background:#777 url(</span><span class="si">#{</span><span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">].</span><span class="n">first</span><span class="si">}</span><span class="s2">) no-repeat center;  background-size: cover;&quot;</span><span class="p">}</span>
+</span><span class='line'>                        <span class="ss">:coffee</span>
+</span><span class='line'>                          <span class="err">$</span><span class="p">(</span><span class="s2">&quot;#player_</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flowplayer</span>
+</span><span class='line'>                            <span class="ss">ratio</span><span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+</span><span class='line'>                            <span class="ss">splash</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>                            <span class="ss">rtmp</span><span class="p">:</span> <span class="s2">&quot;rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st&quot;</span>
+</span><span class='line'>                            <span class="ss">playlist</span><span class="p">:</span> <span class="o">[[</span><span class="ss">mp4</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">#{</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">[</span><span class="s2">&quot;video&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">]]</span>
+</span><span class='line'>                          <span class="k">return</span>
+</span><span class='line'>              <span class="o">=</span><span class="n">hidden_field_tag</span> <span class="s2">&quot;eventid&quot;</span><span class="p">,</span> <span class="n">apr</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>                <span class="o">=</span> <span class="n">label_tag</span> <span class="ss">:thumbnails</span><span class="p">,</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.thumbnails&#39;</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">controls</span>
+</span><span class='line'>                  <span class="o">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>                    <span class="o">.</span><span class="n">span8</span>
+</span><span class='line'>                      <span class="o">.</span><span class="n">owl</span><span class="o">-</span><span class="n">demo</span><span class="o">.</span><span class="n">owl</span><span class="o">-</span><span class="n">carousel</span><span class="p">{</span><span class="ss">:id</span><span class="o">=&gt;</span><span class="s2">&quot;thumbnails_</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+</span><span class='line'>                        <span class="o">-</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">[</span><span class="s2">&quot;thumbs&quot;</span><span class="o">].</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">thumb</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+</span><span class='line'>                          <span class="o">.</span><span class="n">item</span>
+</span><span class='line'>                            <span class="o">%</span><span class="n">img</span><span class="o">.</span><span class="n">lazyOwl</span><span class="p">{</span><span class="ss">alt</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span><span class="ss">width</span><span class="p">:</span><span class="mi">250</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span><span class="mi">250</span><span class="p">,</span> <span class="s2">&quot;data-src&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">thumb</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span><span class="o">/</span>
+</span><span class='line'>                        <span class="ss">:coffee</span>
+</span><span class='line'>                          <span class="err">$</span><span class="p">(</span><span class="s2">&quot;#thumbnails_</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">owlCarousel</span>
+</span><span class='line'>                            <span class="ss">items</span><span class="p">:</span> <span class="mi">5</span>
+</span><span class='line'>                            <span class="ss">lazyLoad</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>                            <span class="ss">navigation</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>                <span class="o">=</span> <span class="n">label_tag</span> <span class="ss">:confirmation</span><span class="p">,</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.confirmation&#39;</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">controls</span>
+</span><span class='line'>                  <span class="o">-</span> <span class="k">if</span> <span class="n">apr</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>                    <span class="o">-</span> <span class="k">if</span>  <span class="n">apr</span><span class="o">.</span><span class="n">confirmations</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">:confirmed_user</span><span class="o">=&gt;</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>                      <span class="o">-</span> <span class="k">if</span>  <span class="n">apr</span><span class="o">.</span><span class="n">confirmations</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">:confirmed_user</span><span class="o">=&gt;</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">confirmed</span> <span class="o">==</span> <span class="kp">true</span>
+</span><span class='line'>                        <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Accepted&quot;</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;accept&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success&#39;</span>
+</span><span class='line'>                        <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Reject&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn&#39;</span> <span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">confirm</span><span class="p">:</span> <span class="s2">&quot;Are you sure?&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we go.</p>
+
+<p><img src="http://dl.dropbox.com/u/47336405/Selection_045.png"></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Caner</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-15T00:21:48+03:00" pubdate data-updated="true">Apr 15<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mongoid/'>Mongoid</a>, <a class='category' href='/blog/categories/rails/'>Rails</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/fileupload/'>fileupload</a>, <a class='category' href='/blog/categories/flowplayer/'>flowplayer</a>, <a class='category' href='/blog/categories/jasny/'>jasny</a>, <a class='category' href='/blog/categories/owl-carousel/'>owl carousel</a>, <a class='category' href='/blog/categories/transloadit/'>transloadit</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/" data-via="" data-counturl="http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations/" title="Previous Post: Full login system out of omniauth-identity with mongoid and jquery validations">&laquo; Full login system out of omniauth-identity with mongoid and jquery validations</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/" title="Next Post: using Rails partials and Ink to create responsive email templates">using Rails partials and Ink to create responsive email templates &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/25/using-rails-partials-and-ink-to-create-responsive-email-templates/">Using Rails Partials and Ink to Create Responsive Email Templates</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/15/forget-about-carrierwave-and-paperclip/">Forget About Carrierwave and Paperclip, Use Transloadit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/09/using-omniauth-identity-with-jquery-clientside-validations/">Full Login System Out of Omniauth-identity With Mongoid and Jquery Validations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/03/collecting-user-data-to-mongoid-application-using-omniauth-facebook-and-koala/">Continuously Collecting User Facebook Data for Mongoid Application Using Omniauth, Facebook, Koala and Resque</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Caner -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'canerblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/';
+        var disqus_url = 'http://canercak.github.io/blog/2014/04/15/forget-about-carrierwave-and-paperclip/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
