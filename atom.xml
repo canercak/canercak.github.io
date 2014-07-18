@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-18T23:30:28+03:00</updated>
+  <updated>2014-07-18T23:37:11+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,5 +12,14 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Fancy Return to Old School Trees]]></title>
+    <link href="http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees/"/>
+    <updated>2014-07-18T23:36:40+03:00</updated>
+    <id>http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
 </feed>
