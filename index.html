@@ -1445,6 +1445,325 @@ The system I’m working on is about User creating quotes to providers. For ever
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/03/two-factor-authentication-using-active-model-otp-with-mongoid/">Two Factor Authentication Using Active_model_otp With Mongoid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-03T17:13:26+03:00" pubdate data-updated="true">Jun 3<sup>rd</sup>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I had to implement two factor authentication using a custom sms provider. Active model OTP really helped me in generating one time use tokens. I thought it won’t be working with mongoid but it was easy to integrate it. Another issue was to make user authenticated on the same page. We just didn’t want to direct user to another page for phone verification. So I’ve written some js to sort it out. It’s a bit “manual” because clientsidevalidations caused problems in Rails4. Everything gets validated both on client and server side. Here you can see relevant parts from the code.</p>
+
+<figure class='code'><figcaption><span>provider.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="k">def</span> <span class="nf">check_verification_code</span>
+</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:result</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">authenticate_otp</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:verification_code</span><span class="o">]</span><span class="p">,</span> <span class="ss">drift</span><span class="p">:</span> <span class="mi">200</span><span class="p">)</span> <span class="c1">#drift enough for old users </span>
+</span><span class='line'>      <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:result</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">}</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">[</span><span class="ss">:mobile_verified</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">format</span><span class="o">.</span><span class="n">json</span>  <span class="p">{</span> <span class="n">render</span> <span class="ss">:json</span> <span class="o">=&gt;</span> <span class="n">data</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">sendverification</span>
+</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:result</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">}</span>
+</span><span class='line'>    <span class="n">phone</span> <span class="o">=</span> <span class="n">validate_phone</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:verification_phone</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">phone</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>      <span class="n">sms</span> <span class="o">=</span> <span class="no">Sms</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">sms</span><span class="o">.</span><span class="n">send_sms</span><span class="p">(</span><span class="o">[</span><span class="n">phone</span><span class="o">]</span><span class="p">,</span><span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">sms_from</span><span class="p">,</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;verification_message&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">current_user</span><span class="o">.</span><span class="n">otp_code</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:result</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">format</span><span class="o">.</span><span class="n">json</span>  <span class="p">{</span> <span class="n">render</span> <span class="ss">:json</span> <span class="o">=&gt;</span> <span class="n">data</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>new.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>
+</span><span class='line'>  <span class="p">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@provider</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="vi">@provider</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="ss">validate</span><span class="p">:</span> <span class="kp">true</span>  <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>      <span class="nc">.span</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span> <span class="s1">&#39;text-align: center&#39;</span><span class="p">}</span>
+</span><span class='line'>        <span class="nt">%h4</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.provider_exp&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nt">%h5</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.provider_exp1&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nf">#phone_details</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:mobile_phone</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;verify_phone_label&#39;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">default_tag</span> <span class="ss">:text_field</span><span class="p">,</span> <span class="ss">:verification_phone</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span> <span class="s1">&#39;05XX XXXXXXX&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;verification_phone&#39;</span> <span class="p">,</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;{mask:&#39;(0569) 9999999&#39;}&quot;</span><span class="p">,</span> <span class="ss">:alt</span><span class="o">=&gt;</span> <span class="s2">&quot;(0569) 9999999&#39;&quot;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">button_to</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;.send_code&#39;</span><span class="p">),</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="ss">:id</span><span class="o">=&gt;</span> <span class="s1">&#39;sendverification&#39;</span><span class="p">,</span> <span class="ss">:class</span><span class="o">=&gt;</span> <span class="s1">&#39;btn btn-medium btn-success&#39;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:error_mobile_label</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;error_mobile_label&#39;</span>
+</span><span class='line'>        <span class="nt">%hr</span>
+</span><span class='line'>        <span class="nf">#verification_details</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:info_label</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;verify_code_label&#39;</span> <span class="p">,</span> <span class="ss">style</span><span class="p">:</span><span class="s2">&quot;display:none&quot;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">default_tag</span> <span class="ss">:text_field</span><span class="p">,</span> <span class="ss">:verification_code</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span> <span class="s1">&#39;XXXXXX&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;verification_code&#39;</span> <span class="p">,</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;{mask:&#39;999999&#39;}&quot;</span><span class="p">,</span> <span class="ss">:alt</span><span class="o">=&gt;</span> <span class="s2">&quot;999999&#39;&quot;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:error_label</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;error_code_label&#39;</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:success_label</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;control-label&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;success_code_label&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>providers.js.coffee</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">bind</span> <span class="s">&quot;keyup&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">val</span><span class="p">().</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">6</span> <span class="c1">#second clientside validation</span>
+</span><span class='line'>        <span class="nv">data = </span><span class="kc">undefined</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span>
+</span><span class='line'>          <span class="nv">type: </span><span class="s">&quot;POST&quot;</span>
+</span><span class='line'>          <span class="nv">url: </span><span class="s">&quot;/check_verification_code&quot;</span>
+</span><span class='line'>          <span class="nv">data: </span><span class="s">&quot;verification_code=&quot;</span> <span class="o">+</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+</span><span class='line'>          <span class="nv">success: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nx">data</span><span class="p">.</span><span class="nx">result</span> <span class="o">is</span> <span class="kc">true</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">provider_business_phone&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_phone&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">())</span>
+</span><span class='line'>              <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">interval</span><span class="p">)</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_code_label&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">success_code_label&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">prop</span> <span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">true</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">provider_submit&quot;</span><span class="p">).</span><span class="nx">prop</span> <span class="s">&quot;value&quot;</span><span class="p">,</span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span> <span class="s">&quot;shared.navbar.pleasewait&quot;</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">providerform&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">()</span> <span class="c1"># provider gets mobile_verified inside</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_code_label&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s">&#39;shared.navbar.error_in_code&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>            <span class="k">return</span>
+</span><span class='line'>          <span class="nv">error: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_code_label&quot;</span><span class="p">).</span><span class="nx">text</span>  <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s">&#39;shared.navbar.problem_sending_request&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_code_label&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">success_code_label&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">return</span>
+</span><span class='line'>      <span class="k">return</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">interval = </span><span class="kc">undefined</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">sendverification&quot;</span><span class="p">).</span><span class="nx">click</span> <span class="nf">-&gt;</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_phone&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">().</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">14</span> <span class="c1">#second clientside vald(before svrside)</span>
+</span><span class='line'>        <span class="nv">time = </span><span class="mi">30000</span> <span class="c1">#OTP default wait time</span>
+</span><span class='line'>        <span class="nv">seconds = </span><span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">time</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">each</span> <span class="nf">-&gt;</span>
+</span><span class='line'>          <span class="nv">disabled_elem = </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+</span><span class='line'>          <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_phone&quot;</span><span class="p">).</span><span class="nx">prop</span> <span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">true</span>
+</span><span class='line'>          <span class="nx">disabled_elem</span><span class="p">.</span><span class="nx">prop</span> <span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">true</span>
+</span><span class='line'>          <span class="nv">new_text = </span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s">&#39;shared.navbar.send_code_again&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="nx">disabled_elem</span><span class="p">.</span><span class="nx">val</span> <span class="nx">new_text</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nx">seconds</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+</span><span class='line'>          <span class="nv">interval = </span><span class="nx">setInterval</span><span class="p">(</span><span class="nf">-&gt;</span>
+</span><span class='line'>            <span class="nx">disabled_elem</span><span class="p">.</span><span class="nx">val</span> <span class="nx">new_text</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="o">--</span><span class="nx">seconds</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nx">seconds</span> <span class="o">is</span> <span class="mi">0</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_phone&quot;</span><span class="p">).</span><span class="nx">prop</span> <span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">false</span>
+</span><span class='line'>              <span class="nx">disabled_elem</span><span class="p">.</span><span class="nx">prop</span> <span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">false</span>
+</span><span class='line'>              <span class="nx">disabled_elem</span><span class="p">.</span><span class="nx">val</span> <span class="nx">new_text</span>
+</span><span class='line'>              <span class="nx">clearInterval</span> <span class="nx">interval</span>
+</span><span class='line'>            <span class="k">return</span>
+</span><span class='line'>          <span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span>
+</span><span class='line'>          <span class="nv">data: </span><span class="s">&quot;verification_phone=&quot;</span> <span class="o">+</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_phone&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+</span><span class='line'>          <span class="nv">type: </span><span class="s">&quot;get&quot;</span>
+</span><span class='line'>          <span class="nv">url: </span><span class="s">&quot;/sendverification&quot;</span>
+</span><span class='line'>          <span class="nv">success: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nx">data</span><span class="p">.</span><span class="nx">result</span> <span class="o">is</span> <span class="kc">true</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verify_code_label&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_mobile_label&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_code_label&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">val</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">verification_code&quot;</span><span class="p">).</span><span class="nx">focus</span><span class="p">()</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_mobile_label&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s">&#39;shared.navbar.problem_sending_sms&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>          <span class="nv">error: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>              <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">error_mobile_label&quot;</span><span class="p">).</span><span class="nx">text</span>  <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s">&#39;shared.navbar.problem_sending_request&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>providers_controller.rb </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">session</span><span class="o">[</span><span class="ss">:mobile_verified</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'>      <span class="vi">@provider</span><span class="o">.</span><span class="n">mobile_verified</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'>      <span class="vi">@provider</span><span class="o">.</span><span class="n">business_phone</span> <span class="o">=</span> <span class="n">validate_phone</span><span class="p">(</span> <span class="n">params</span><span class="o">[</span><span class="ss">:provider</span><span class="o">][</span><span class="ss">:business_phone</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">[</span><span class="ss">:mobile_verified</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>user.rb </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="nb">require</span> <span class="s2">&quot;active_model_otp&quot;</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Document</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">OneTimePassword</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="n">has_one_time_password</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:email</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:otp_secret_key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
@@ -1471,6 +1790,10 @@ The system I’m working on is about User creating quotes to providers. For ever
     
       <li class="post">
         <a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/06/03/two-factor-authentication-using-active-model-otp-with-mongoid/">Two Factor Authentication Using Active_model_otp With Mongoid</a>
       </li>
     
   </ul>

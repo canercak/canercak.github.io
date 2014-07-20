@@ -26,17 +26,23 @@
     <priority>0.8</priority>
   </url>
   
+  <url>
+    <loc>http://canercak.github.io/blog/2011/06/03/two-factor-authentication-using-active-model-otp-with-mongoid/</loc>
+    <lastmod>2011-06-03T17:13:26+03:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
   
   <url>
     <loc>http://canercak.github.io/</loc>
-    <lastmod>2014-07-20T22:52:31+03:00</lastmod>
+    <lastmod>2014-07-20T22:59:42+03:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://canercak.github.io/blog/archives/</loc>
-    <lastmod>2014-07-20T22:52:31+03:00</lastmod>
+    <lastmod>2014-07-20T22:59:42+03:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

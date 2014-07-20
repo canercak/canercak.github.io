@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-20T22:52:31+03:00</updated>
+  <updated>2014-07-20T22:59:42+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -804,6 +804,176 @@ class Quote
     %i.icon.icon-chevron-right
   %h5{style:"text-align: center;margin-top: -10px;"}
   #onClick-placeholder
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Two Factor Authentication Using Active_model_otp With Mongoid]]></title>
+    <link href="http://canercak.github.io/blog/2011/06/03/two-factor-authentication-using-active-model-otp-with-mongoid/"/>
+    <updated>2011-06-03T17:13:26+03:00</updated>
+    <id>http://canercak.github.io/blog/2011/06/03/two-factor-authentication-using-active-model-otp-with-mongoid</id>
+    <content type="html"><![CDATA[<p>I had to implement two factor authentication using a custom sms provider. Active model OTP really helped me in generating one time use tokens. I thought it won’t be working with mongoid but it was easy to integrate it. Another issue was to make user authenticated on the same page. We just didn’t want to direct user to another page for phone verification. So I’ve written some js to sort it out. It’s a bit “manual” because clientsidevalidations caused problems in Rails4. Everything gets validated both on client and server side. Here you can see relevant parts from the code.</p>
+
+<p>``` ruby provider.rb</p>
+
+<pre><code>def check_verification_code
+data = {:result =&gt; false}
+if current_user.authenticate_otp(params[:verification_code], drift: 200) #drift enough for old users 
+  data = {:result =&gt; true}
+  session[:mobile_verified] = true
+end
+respond_to do |format|
+  format.json  { render :json =&gt; data} 
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  def sendverification</p>
+
+<pre><code>data = {:result =&gt; false} 
+phone = validate_phone(params[:verification_phone])
+if phone.present?
+  sms = Sms.new       
+  if sms.send_sms([phone],APP_CONFIG.sms_from, t('verification_message') + current_user.otp_code.to_s)
+    data = {:result =&gt; true} 
+  end
+end
+respond_to do |format|
+  format.json  { render :json =&gt; data} 
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>``` haml new.html.haml</p>
+
+<pre><code>= bootstrap_form_for @provider, id: @provider.id,  validate: true  do |f|
+    .span{style: 'text-align: center'} 
+      %h4= t('.provider_exp')
+      %h5= t('.provider_exp1')
+      #phone_details
+        = f.label :mobile_phone, class: 'control-label', id: 'verify_phone_label'
+        = f.default_tag :text_field, :verification_phone, placeholder: '05XX XXXXXXX', id: 'verification_phone' ,:class =&gt; "{mask:'(0569) 9999999'}", :alt=&gt; "(0569) 9999999'"     
+        = button_to t('.send_code'), "#", :id=&gt; 'sendverification', :class=&gt; 'btn btn-medium btn-success'
+        = f.label :error_mobile_label, class: 'control-label', id: 'error_mobile_label' 
+      %hr
+      #verification_details
+        = f.label :info_label, class: 'control-label', id: 'verify_code_label' , style:"display:none"
+        = f.default_tag :text_field, :verification_code, placeholder: 'XXXXXX', id: 'verification_code' ,:class =&gt; "{mask:'999999'}", :alt=&gt; "999999'" 
+        = f.label :error_label, class: 'control-label', id: 'error_code_label' 
+        = f.label :success_label, class: 'control-label', id: 'success_code_label' 
+</code></pre>
+
+<p><code>
+</code> coffeescript providers.js.coffee</p>
+
+<p>  $(&ldquo;#verification_code&rdquo;).bind &ldquo;keyup&rdquo;, &ndash;></p>
+
+<pre><code>  if $(this).val().length is 6 #second clientside validation
+    data = undefined
+    $.ajax
+      type: "POST"
+      url: "/check_verification_code"
+      data: "verification_code=" + $("#verification_code").val() 
+      success: (data) -&gt;
+        if data.result is true
+          $("#provider_business_phone").val($("#verification_phone").val())
+          clearInterval(interval)
+          $("#error_code_label").hide()
+          $("#success_code_label").show()            
+          $("#verification_code").prop "disabled", true
+          $("#provider_submit").prop "value", I18n.t "shared.navbar.pleasewait"            
+          $("#providerform").submit() # provider gets mobile_verified inside
+          return
+        else
+          $("#error_code_label").text I18n.t('shared.navbar.error_in_code').show()
+        return
+      error: (data) -&gt;
+          $("#error_code_label").text  I18n.t('shared.navbar.problem_sending_request').show()  
+          return
+  else
+    $("#error_code_label").hide()
+    $("#success_code_label").hide()
+    return
+  return 
+
+interval = undefined
+$("#sendverification").click -&gt;
+  if $("#verification_phone").val().length is 14 #second clientside vald(before svrside)
+    time = 30000 #OTP default wait time
+    seconds = Math.ceil(time / 1000)
+    $(this).each -&gt;
+      disabled_elem = $(this)
+      $("#verification_phone").prop "disabled", true
+      disabled_elem.prop "disabled", true 
+      new_text =  I18n.t('shared.navbar.send_code_again') 
+      disabled_elem.val new_text + " (" + seconds + ")"
+      interval = setInterval(-&gt;
+        disabled_elem.val new_text + " (" + --seconds + ")"
+        if seconds is 0
+          $("#verification_phone").prop "disabled", false
+          disabled_elem.prop "disabled", false
+          disabled_elem.val new_text
+          clearInterval interval
+        return
+      , 1000)
+      return
+    $.ajax
+      data: "verification_phone=" + $("#verification_phone").val()
+      type: "get"
+      url: "/sendverification"
+      success: (data) -&gt;
+        if data.result is true
+          $("#verification_code").show()
+          $("#verify_code_label").show()
+          $("#error_mobile_label").hide()  
+          $("#error_code_label").hide()
+          $("#verification_code").val ''
+          $("#verification_code").focus() 
+          return
+        else
+          $("#error_mobile_label").text I18n.t('shared.navbar.problem_sending_sms').show() 
+          return
+      error: (data) -&gt;
+          $("#error_mobile_label").text  I18n.t('shared.navbar.problem_sending_request').show()  
+          return
+  return false 
+</code></pre>
+
+<p>```</p>
+
+<p>``` ruby providers_controller.rb
+  def create</p>
+
+<pre><code>...
+if session[:mobile_verified] = true
+  @provider.mobile_verified = true
+  @provider.business_phone = validate_phone( params[:provider][:business_phone])
+  session[:mobile_verified] = false
+else
+...
+</code></pre>
+
+<p>```</p>
+
+<p>``` ruby user.rb
+  require &ldquo;active_model_otp&rdquo;
+  class User</p>
+
+<pre><code>include Mongoid::Document
+...
+include ActiveModel::OneTimePassword 
+...
+has_one_time_password
+...
+field :email
+field :otp_secret_key 
 </code></pre>
 
 <p>```</p>
