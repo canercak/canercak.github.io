@@ -98,19 +98,20 @@ I guess Rails with Bootstrap forms and components make us present collective dat
 use treeviews to present things &ldquo;all-in-one&rdquo;.</p>
 
 <p>By the way for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
-I had to make a company official to select the services they offer to customers. Services had 3-level categories
+I had to make a company official to select the services they offer to customers. Services had 4-level categories
 and the lowest level had multiple variations. When I think of the word &ldquo;select&rdquo; in Rails, I instantly remember my friend
 Select2. I feed the JSON, Select2 presents and makes the user select things.
 However in this case user had to select services from ever growing thousand of services. He had to view all categories at once (obviously the top ones first),
-he had to filter them and for sure he had to select multiples of services.
-Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.</p>
+he had to filter them and for sure he had to select multiples of services.</p>
 
-<p>Things seemed right first however there was a catch.
-Think of google. You want to search for a wikipedia article but just can&rsquo;t it with the keywords you write.
+<p>Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.
+Things seemed right first however there was a catch.</p>
+
+<p>Think of google. You want to search for a wikipedia article but just can&rsquo;t find it with the keywords you write -even google has exceptional capabilities to do that.
 Then you go to wikipedia, find a related category and you reach to the article by looking at its parent or child categories.
 You even remember to check other categories once you see them in a a categorized list.
 This was the case for selecting services. When using select2 user could filter the services he is offering and would definitely reach to them,
-however he would never see the &ldquo;map&rdquo; of those thousands of categories and for sure he would not include the exact services he is offering.
+however he would never see the &ldquo;map&rdquo; of those thousands of categories and for sure he would not include the exact services he was offering.
 I knew this could undermine the user experience so I returned to my old school friend treeview.</p>
 
 <p>Not being mad to create mine, I had to find a js based treeview component which is free and has JSON, checkbox, selection, filtering and responsive functionality.
