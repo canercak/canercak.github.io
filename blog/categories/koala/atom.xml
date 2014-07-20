@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Koala, | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/koala/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-20T22:28:49+03:00</updated>
+  <updated>2014-07-20T22:30:27+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -61,8 +61,9 @@ APP_CONFIG.facebook.app_secret,
 
 <p>```</p>
 
-<p> ``` ruby
-OmniAuth.config.logger = Rails.logger
+<p>``` ruby</p>
+
+<p>OmniAuth.config.logger = Rails.logger
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook,</p>
 
@@ -71,12 +72,13 @@ APP_CONFIG.facebook.app_secret,
 { scope: APP_CONFIG.facebook.scope }
 </code></pre>
 
-<p>end
-```</p>
+<p>end</p>
+
+<p>```</p>
 
 <p>The haml view for our big facebook button.</p>
 
-<p> ``` ruby  views/pages/_facebook_login.html.haml</p>
+<p>``` ruby  views/pages/_facebook_login.html.haml</p>
 
 <p>.hidden-phone
   = link_to auth_at_provider_path(provider: :facebook), class: &lsquo;btn btn-large btn-facebook&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true } do</p>
@@ -89,11 +91,11 @@ APP_CONFIG.facebook.app_secret,
   %b= t(&lsquo;we_will_never_post&rsquo;)
   %br= t(&lsquo;pages.home.signin_terms&rsquo;, appname: APP_CONFIG.app_name, terms_link: link_to(t(&lsquo;terms&rsquo;), :terms, :target=> &lsquo;<em>blank&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true }), policy_link: link_to(t(&lsquo;policy&rsquo;), :policy, :target=> &lsquo;</em>blank&rsquo;)).html_safe</p>
 
-<p>  ```</p>
+<p>```</p>
 
 <p>Necassary routes to manage sessions</p>
 
-<p> ``` ruby config/routes.rb
+<p>``` ruby config/routes.rb
   # Sessions
   resources :sessions, only: [:create, :destroy]</p>
 
@@ -102,11 +104,11 @@ APP_CONFIG.facebook.app_secret,
   get &lsquo;auth/failure&rsquo;, to: redirect(&lsquo;/&rsquo;)
   get &lsquo;signout&rsquo;, to: &lsquo;sessions#destroy&rsquo;, as: :logout</p>
 
-<p>  ```</p>
+<p>```</p>
 
 <p>Here is the user model. Removed the nonrelevant fields. As you can see I’m collecting enough data to make decisions.</p>
 
-<p> ``` ruby app/models/user.rb
+<p>``` ruby app/models/user.rb
 class User
   include Mongoid::Document
   include ::Concerns::User::Authentication
@@ -131,7 +133,7 @@ class User
   field :name
   field :facebook_verified, type: Boolean, default: false</p>
 
-<p>  ```</p>
+<p>```</p>
 
 <p>Here is the module for facebook authentication. This will collect facebook user data before saving the user.</p>
 
@@ -199,11 +201,11 @@ end
 <p>  end
 end</p>
 
-<p>  ```</p>
+<p>```</p>
 
 <p>This module is for caching data. I’m making resque collect more and more details. We will run resque workers to get them. You can also schedule the process with resque scheduler. Checkout facebook graph api for more data to get. And checkout resque gem for details.</p>
 
-<p> ``` ruby app/models/concerns/facebook.rb
+<p>``` ruby app/models/concerns/facebook.rb
 module Concerns
   module User</p>
 
@@ -249,11 +251,11 @@ end
 <p>  end
 end</p>
 
-<p>  ```</p>
+<p>```</p>
 
 <p>We define a resque worker to cache facebook data.</p>
 
-<p> ``` ruby app/workers/facebook_data_cacher.rb
+<p>``` ruby app/workers/facebook_data_cacher.rb
 class FacebookDataCacher
   @queue = :facebook_cache_data_queue
   def self.perform(user_id)</p>
@@ -267,8 +269,9 @@ end
 </code></pre>
 
 <p>  end
-end
-  ```</p>
+end</p>
+
+<p>```</p>
 
 <p>Here we go. The code above will get us the data we defined on our model and it will be updating and adding more data when user logins. Now it’s time to make decisions!!</p>
 ]]></content>
