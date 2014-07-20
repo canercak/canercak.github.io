@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Omniauth, | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/omniauth/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-20T22:27:20+03:00</updated>
+  <updated>2014-07-20T22:28:49+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -28,8 +28,9 @@
 
 <p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
 
-<p> ``` ruby config/settings/application.rb
-SimpleConfig.for :application do
+<p>``` ruby config/settings/application.rb</p>
+
+<p>SimpleConfig.for :application do
   group :facebook do</p>
 
 <pre><code>set :namespace, 'FACEBOOK_NAMESPACE'
@@ -41,11 +42,11 @@ set :cache_expiry_time, 7.days
 
 <p>  end</p>
 
-<p>  ```</p>
+<p>```</p>
 
-<p> Here are omniauth initialization details. You can learn more about omniauth on it’s github page.</p>
+<p>Here are omniauth initialization details. You can learn more about omniauth on it’s github page.</p>
 
-<p> ``` ruby config/initialisers/omniauth.rb</p>
+<p>``` ruby config/initialisers/omniauth.rb</p>
 
 <p>OmniAuth.config.logger = Rails.logger
 Rails.application.config.middleware.use OmniAuth::Builder do
@@ -58,7 +59,7 @@ APP_CONFIG.facebook.app_secret,
 
 <p>end</p>
 
-<p> ```</p>
+<p>```</p>
 
 <p> ``` ruby
 OmniAuth.config.logger = Rails.logger

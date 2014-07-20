@@ -141,37 +141,43 @@
 
 <p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
 
-<p> &#8220;` ruby config/settings/application.rb
-SimpleConfig.for :application do
-  group :facebook do</p>
+<figure class='code'><figcaption><span>config/settings/application.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">SimpleConfig</span><span class="o">.</span><span class="n">for</span> <span class="ss">:application</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">group</span> <span class="ss">:facebook</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:namespace</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_NAMESPACE&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:app_id</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_APP_ID&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:app_secret</span><span class="p">,</span> <span class="s1">&#39;FACEBOOK_SECRET&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:scope</span><span class="p">,</span> <span class="s1">&#39;email, publish_stream, user_birthday, user_about_me, user_education_history, user_interests, user_likes, user_religion_politics, user_work_history&#39;</span>
+</span><span class='line'>    <span class="n">set</span> <span class="ss">:cache_expiry_time</span><span class="p">,</span> <span class="mi">7</span><span class="o">.</span><span class="n">days</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>set :namespace, 'FACEBOOK_NAMESPACE'
-set :app_id, 'FACEBOOK_APP_ID'
-set :app_secret, 'FACEBOOK_SECRET'
-set :scope, 'email, publish_stream, user_birthday, user_about_me, user_education_history, user_interests, user_likes, user_religion_politics, user_work_history'
-set :cache_expiry_time, 7.days
-</code></pre>
 
-<p>  end</p>
+<p>Here are omniauth initialization details. You can learn more about omniauth on it’s github page.</p>
 
-<p>  &#8220;`</p>
+<figure class='code'><figcaption><span>config/initialisers/omniauth.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">OmniAuth</span><span class="o">::</span><span class="no">Builder</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
+</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
+</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p> Here are omniauth initialization details. You can learn more about omniauth on it’s github page.</p>
-
-<p> &#8220;` ruby config/initialisers/omniauth.rb</p>
-
-<p>OmniAuth.config.logger = Rails.logger
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook,</p>
-
-<pre><code>APP_CONFIG.facebook.app_id,
-APP_CONFIG.facebook.app_secret,
-{ scope: APP_CONFIG.facebook.scope }
-</code></pre>
-
-<p>end</p>
-
-<p> &#8220;`</p>
 
 <p> &#8220;` ruby
 OmniAuth.config.logger = Rails.logger
@@ -185,7 +191,7 @@ APP_CONFIG.facebook.app_secret,
 
 <p>end</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>config/initialisers/omniauth.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -245,68 +251,66 @@ APP_CONFIG.facebook.app_secret,
 <span class='line-number'>58</span>
 <span class='line-number'>59</span>
 <span class='line-number'>60</span>
-<span class='line-number'>61</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>
-</span><span class='line'>The haml view for our big facebook button.
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">The</span> <span class="n">haml</span> <span class="n">view</span> <span class="k">for</span> <span class="n">our</span> <span class="n">big</span> <span class="n">facebook</span> <span class="n">button</span><span class="o">.</span>
 </span><span class='line'>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'> ``` ruby  views/pages/_facebook_login.html.haml
-</span><span class='line'> 
+</span><span class='line'> <span class="sb">``` ruby  views/pages/_facebook_login.html.haml</span>
+</span><span class='line'><span class="sb"> </span>
 </span><span class='line'>
-</span><span class='line'>.hidden-phone
-</span><span class='line'>  = link_to auth_at_provider_path(provider: :facebook), class: 'btn btn-large btn-facebook', data: { :"no-turbolink" =&gt; true } do
-</span><span class='line'>    %i.icon-facebook-sign.icon-large
-</span><span class='line'>    = t('login_with_facebook')
-</span><span class='line'>%p.signin-terms
-</span><span class='line'>  %b= t('we_will_never_post')
-</span><span class='line'>  %br= t('pages.home.signin_terms', appname: APP_CONFIG.app_name, terms_link: link_to(t('terms'), :terms, :target=&gt; '_blank', data: { :"no-turbolink" =&gt; true }), policy_link: link_to(t('policy'), :policy, :target=&gt; '_blank')).html_safe
+</span><span class='line'><span class="sb">.hidden-phone</span>
+</span><span class='line'><span class="sb">  = link_to auth_at_provider_path(provider: :facebook), class: &#39;btn btn-large btn-facebook&#39;, data: { :&quot;no-turbolink&quot; =&gt; true } do</span>
+</span><span class='line'><span class="sb">    %i.icon-facebook-sign.icon-large</span>
+</span><span class='line'><span class="sb">    = t(&#39;login_with_facebook&#39;)</span>
+</span><span class='line'><span class="sb">%p.signin-terms</span>
+</span><span class='line'><span class="sb">  %b= t(&#39;we_will_never_post&#39;)</span>
+</span><span class='line'><span class="sb">  %br= t(&#39;pages.home.signin_terms&#39;, appname: APP_CONFIG.app_name, terms_link: link_to(t(&#39;terms&#39;), :terms, :target=&gt; &#39;_blank&#39;, data: { :&quot;no-turbolink&quot; =&gt; true }), policy_link: link_to(t(&#39;policy&#39;), :policy, :target=&gt; &#39;_blank&#39;)).html_safe</span>
 </span><span class='line'>
-</span><span class='line'>  ```
+</span><span class='line'><span class="sb">  ```</span>
 </span><span class='line'>
-</span><span class='line'>Necassary routes to manage sessions
+</span><span class='line'><span class="no">Necassary</span> <span class="n">routes</span> <span class="n">to</span> <span class="n">manage</span> <span class="n">sessions</span>
 </span><span class='line'>
-</span><span class='line'> ``` ruby config/routes.rb
-</span><span class='line'>  # Sessions
-</span><span class='line'>  resources :sessions, only: [:create, :destroy]
+</span><span class='line'> <span class="sb">``` ruby config/routes.rb</span>
+</span><span class='line'><span class="sb">  # Sessions</span>
+</span><span class='line'><span class="sb">  resources :sessions, only: [:create, :destroy]</span>
 </span><span class='line'>
-</span><span class='line'>  get 'auth/:provider', to: 'sessions#new', as: :auth_at_provider
-</span><span class='line'>  get 'auth/:provider/callback', to: 'sessions#create'
-</span><span class='line'>  get 'auth/failure', to: redirect('/')
-</span><span class='line'>  get 'signout', to: 'sessions#destroy', as: :logout
+</span><span class='line'><span class="sb">  get &#39;auth/:provider&#39;, to: &#39;sessions#new&#39;, as: :auth_at_provider</span>
+</span><span class='line'><span class="sb">  get &#39;auth/:provider/callback&#39;, to: &#39;sessions#create&#39;</span>
+</span><span class='line'><span class="sb">  get &#39;auth/failure&#39;, to: redirect(&#39;/&#39;)</span>
+</span><span class='line'><span class="sb">  get &#39;signout&#39;, to: &#39;sessions#destroy&#39;, as: :logout</span>
 </span><span class='line'>
-</span><span class='line'>  ```
+</span><span class='line'><span class="sb">  ```</span>
 </span><span class='line'>
-</span><span class='line'>Here is the user model. Removed the nonrelevant fields. As you can see I’m collecting enough data to make decisions.
+</span><span class='line'><span class="no">Here</span> <span class="n">is</span> <span class="n">the</span> <span class="n">user</span> <span class="n">model</span><span class="o">.</span> <span class="no">Removed</span> <span class="n">the</span> <span class="n">nonrelevant</span> <span class="n">fields</span><span class="o">.</span> <span class="no">As</span> <span class="n">you</span> <span class="n">can</span> <span class="n">see</span> <span class="n">I</span><span class="err">’</span><span class="n">m</span> <span class="n">collecting</span> <span class="n">enough</span> <span class="n">data</span> <span class="n">to</span> <span class="n">make</span> <span class="n">decisions</span><span class="o">.</span>
 </span><span class='line'>
-</span><span class='line'> ``` ruby app/models/user.rb
-</span><span class='line'>class User
-</span><span class='line'>  include Mongoid::Document
-</span><span class='line'>  include ::Concerns::User::Authentication
-</span><span class='line'>  include ::Concerns::User::Facebook
+</span><span class='line'> <span class="sb">``` ruby app/models/user.rb</span>
+</span><span class='line'><span class="sb">class User</span>
+</span><span class='line'><span class="sb">  include Mongoid::Document</span>
+</span><span class='line'><span class="sb">  include ::Concerns::User::Authentication</span>
+</span><span class='line'><span class="sb">  include ::Concerns::User::Facebook</span>
 </span><span class='line'>
-</span><span class='line'>  field :provider
-</span><span class='line'>  field :uid
-</span><span class='line'>  field :oauth_token
-</span><span class='line'>  field :oauth_expires_at
-</span><span class='line'>  field :facebook_permissions, type: Array, default: []
-</span><span class='line'>  field :facebook_friends, type: Array, default: []
-</span><span class='line'>  field :facebook_favorites, type: Array, default: []
-</span><span class='line'>  field :facebook_data_cached_at, type: DateTime, default: '2014-01-01'
-</span><span class='line'>  field :gender
-</span><span class='line'>  field :username
-</span><span class='line'>  field :bio
-</span><span class='line'>  field :languages, type: Array, default: []
-</span><span class='line'>  field :birthday, type: Date
-</span><span class='line'>  field :work, type: Hash, default: {}
-</span><span class='line'>  field :education, type: Hash, default: {}
-</span><span class='line'>  field :email
-</span><span class='line'>  field :name
-</span><span class='line'>  field :facebook_verified, type: Boolean, default: false
+</span><span class='line'><span class="sb">  field :provider</span>
+</span><span class='line'><span class="sb">  field :uid</span>
+</span><span class='line'><span class="sb">  field :oauth_token</span>
+</span><span class='line'><span class="sb">  field :oauth_expires_at</span>
+</span><span class='line'><span class="sb">  field :facebook_permissions, type: Array, default: []</span>
+</span><span class='line'><span class="sb">  field :facebook_friends, type: Array, default: []</span>
+</span><span class='line'><span class="sb">  field :facebook_favorites, type: Array, default: []</span>
+</span><span class='line'><span class="sb">  field :facebook_data_cached_at, type: DateTime, default: &#39;2014-01-01&#39;</span>
+</span><span class='line'><span class="sb">  field :gender</span>
+</span><span class='line'><span class="sb">  field :username</span>
+</span><span class='line'><span class="sb">  field :bio</span>
+</span><span class='line'><span class="sb">  field :languages, type: Array, default: []</span>
+</span><span class='line'><span class="sb">  field :birthday, type: Date</span>
+</span><span class='line'><span class="sb">  field :work, type: Hash, default: {}</span>
+</span><span class='line'><span class="sb">  field :education, type: Hash, default: {}</span>
+</span><span class='line'><span class="sb">  field :email</span>
+</span><span class='line'><span class="sb">  field :name</span>
+</span><span class='line'><span class="sb">  field :facebook_verified, type: Boolean, default: false</span>
 </span><span class='line'>
-</span><span class='line'>  ```
+</span><span class='line'><span class="sb">  ```</span>
 </span><span class='line'>
-</span><span class='line'>Here is the module for facebook authentication. This will collect facebook user data before saving the user.
+</span><span class='line'><span class="no">Here</span> <span class="n">is</span> <span class="n">the</span> <span class="k">module</span> <span class="nn">for</span> <span class="n">facebook</span> <span class="n">authentication</span><span class="o">.</span> <span class="no">This</span> <span class="n">will</span> <span class="n">collect</span> <span class="n">facebook</span> <span class="n">user</span> <span class="n">data</span> <span class="n">before</span> <span class="n">saving</span> <span class="n">the</span> <span class="n">user</span><span class="o">.</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
