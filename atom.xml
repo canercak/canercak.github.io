@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-18T23:50:16+03:00</updated>
+  <updated>2014-07-20T22:27:20+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -19,6 +19,329 @@
     <updated>2014-07-18T23:36:40+03:00</updated>
     <id>http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees</id>
     <content type="html"><![CDATA[<p>dsadasdsadsa</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Continuously Collecting User Facebook Data for Mongoid Application Using Omniauth]]></title>
+    <link href="http://canercak.github.io/blog/2014/03/20/continuously-collecting-user-facebook-data-for-mongoid-application-using-omniauth/"/>
+    <updated>2014-03-20T21:06:29+02:00</updated>
+    <id>http://canercak.github.io/blog/2014/03/20/continuously-collecting-user-facebook-data-for-mongoid-application-using-omniauth</id>
+    <content type="html"><![CDATA[<p>Data is the key to long-lasting relationship with users. The more, the better. Once we have relevant data; we can target marketing, develop features tailored to specific users and make users trust each other. So how do we collect relevant data? There is an easy way. It’s Facebook.</p>
+
+<p>First, talk with your solicitor to add your Terms&amp;Conditions document that you are collecting data by using facebook. Then make a big “Login with Facebook” button on your landing page. Don’t forget to write that the user accepts the conditions once the button clicked. Something like this:</p>
+
+<p><img src="http://dl.dropbox.com/u/47336405/Selection_044.png"></p>
+
+<p> Then you are ready to go. I use three gems to collect data: omniauth, omniauth-facebook and koala. For config settings there is simple config and for caching data I use resque. I know that using devise could be easier. But simply, its big.(I have omniauth-identity for nonfacebook logins) So this will be different than devise’s way.</p>
+
+<p>Here we define our facebook app details. Sensitive data is stored on local.rb file and Simpleconfig serves them to environments. Checkout simpleconfig for details.</p>
+
+<p> &#8220;` ruby config/settings/application.rb
+SimpleConfig.for :application do
+  group :facebook do</p>
+
+<pre><code>set :namespace, 'FACEBOOK_NAMESPACE'
+set :app_id, 'FACEBOOK_APP_ID'
+set :app_secret, 'FACEBOOK_SECRET'
+set :scope, 'email, publish_stream, user_birthday, user_about_me, user_education_history, user_interests, user_likes, user_religion_politics, user_work_history'
+set :cache_expiry_time, 7.days
+</code></pre>
+
+<p>  end</p>
+
+<p>  &#8220;`</p>
+
+<p> Here are omniauth initialization details. You can learn more about omniauth on it’s github page.</p>
+
+<p> &#8220;` ruby config/initialisers/omniauth.rb</p>
+
+<p>OmniAuth.config.logger = Rails.logger
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :facebook,</p>
+
+<pre><code>APP_CONFIG.facebook.app_id,
+APP_CONFIG.facebook.app_secret,
+{ scope: APP_CONFIG.facebook.scope }
+</code></pre>
+
+<p>end</p>
+
+<p> &#8220;`</p>
+
+<p> &#8220;` ruby
+OmniAuth.config.logger = Rails.logger
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :facebook,</p>
+
+<pre><code>APP_CONFIG.facebook.app_id,
+APP_CONFIG.facebook.app_secret,
+{ scope: APP_CONFIG.facebook.scope }
+</code></pre>
+
+<p>end</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>The haml view for our big facebook button.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> ``` ruby  views/pages/_facebook_login.html.haml
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'>.hidden-phone
+</span><span class='line'>  = link_to auth_at_provider_path(provider: :facebook), class: 'btn btn-large btn-facebook', data: { :"no-turbolink" =&gt; true } do
+</span><span class='line'>    %i.icon-facebook-sign.icon-large
+</span><span class='line'>    = t('login_with_facebook')
+</span><span class='line'>%p.signin-terms
+</span><span class='line'>  %b= t('we_will_never_post')
+</span><span class='line'>  %br= t('pages.home.signin_terms', appname: APP_CONFIG.app_name, terms_link: link_to(t('terms'), :terms, :target=&gt; '_blank', data: { :"no-turbolink" =&gt; true }), policy_link: link_to(t('policy'), :policy, :target=&gt; '_blank')).html_safe
+</span><span class='line'>
+</span><span class='line'>  ```
+</span><span class='line'>
+</span><span class='line'>Necassary routes to manage sessions
+</span><span class='line'>
+</span><span class='line'> ``` ruby config/routes.rb
+</span><span class='line'>  # Sessions
+</span><span class='line'>  resources :sessions, only: [:create, :destroy]
+</span><span class='line'>
+</span><span class='line'>  get 'auth/:provider', to: 'sessions#new', as: :auth_at_provider
+</span><span class='line'>  get 'auth/:provider/callback', to: 'sessions#create'
+</span><span class='line'>  get 'auth/failure', to: redirect('/')
+</span><span class='line'>  get 'signout', to: 'sessions#destroy', as: :logout
+</span><span class='line'>
+</span><span class='line'>  ```
+</span><span class='line'>
+</span><span class='line'>Here is the user model. Removed the nonrelevant fields. As you can see I’m collecting enough data to make decisions.
+</span><span class='line'>
+</span><span class='line'> ``` ruby app/models/user.rb
+</span><span class='line'>class User
+</span><span class='line'>  include Mongoid::Document
+</span><span class='line'>  include ::Concerns::User::Authentication
+</span><span class='line'>  include ::Concerns::User::Facebook
+</span><span class='line'>
+</span><span class='line'>  field :provider
+</span><span class='line'>  field :uid
+</span><span class='line'>  field :oauth_token
+</span><span class='line'>  field :oauth_expires_at
+</span><span class='line'>  field :facebook_permissions, type: Array, default: []
+</span><span class='line'>  field :facebook_friends, type: Array, default: []
+</span><span class='line'>  field :facebook_favorites, type: Array, default: []
+</span><span class='line'>  field :facebook_data_cached_at, type: DateTime, default: '2014-01-01'
+</span><span class='line'>  field :gender
+</span><span class='line'>  field :username
+</span><span class='line'>  field :bio
+</span><span class='line'>  field :languages, type: Array, default: []
+</span><span class='line'>  field :birthday, type: Date
+</span><span class='line'>  field :work, type: Hash, default: {}
+</span><span class='line'>  field :education, type: Hash, default: {}
+</span><span class='line'>  field :email
+</span><span class='line'>  field :name
+</span><span class='line'>  field :facebook_verified, type: Boolean, default: false
+</span><span class='line'>
+</span><span class='line'>  ```
+</span><span class='line'>
+</span><span class='line'>Here is the module for facebook authentication. This will collect facebook user data before saving the user.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> ruby app/models/concerns/authentication.rb</p>
+
+<p>module Concerns
+  module User</p>
+
+<pre><code>module Authentication
+  extend ActiveSupport::Concern
+
+  included do
+    def set_fields_from_omniauth(auth)
+      set_credentials auth.credentials
+      set_info auth.info
+      set_extra_raw_info auth.extra.raw_info
+      set_extra_raw_info_special_permissions auth.extra.raw_info
+      set_permissions
+      Resque.enqueue(FacebookDataCacher, id)
+    rescue Redis::CannotConnectError
+    end
+
+    private
+    def set_credentials(credentials)
+      self.oauth_token = credentials.token
+      self.oauth_expires_at =  Time.at credentials.expires_at || Time.now
+    end
+
+    def set_info(info)
+      self.email = info.email
+      self.name = info.name
+      self.facebook_verified = info.verified || false
+    end
+    def set_extra_raw_info(raw_info)
+      self.username = raw_info.username
+      self.gender = raw_info.gender
+      self.bio = raw_info.bio
+      self.languages = raw_info.languages || {}
+    end
+    def set_extra_raw_info_special_permissions(raw_info)
+      self.birthday = Date.strptime(raw_info.birthday, "%m/%d/%Y").at_midnight if raw_info.birthday
+      self.work = raw_info.work || {}
+      self.education = raw_info.education || {}
+    end
+    def set_permissions
+      facebook do |fb|
+        self.facebook_permissions = fb.get_connections('me', 'permissions')[0]
+      end
+    end
+  end
+
+  module ClassMethods
+    def from_omniauth(auth)
+      user = where(auth.slice(:provider, :uid)).first_or_initialize
+      user.provider = auth.provider
+      user.uid = auth.uid
+      user.set_fields_from_omniauth auth
+      user.save!
+      user
+    end
+  end
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>  &#8220;`</p>
+
+<p>This module is for caching data. I’m making resque collect more and more details. We will run resque workers to get them. You can also schedule the process with resque scheduler. Checkout facebook graph api for more data to get. And checkout resque gem for details.</p>
+
+<p> &#8220;` ruby app/models/concerns/facebook.rb
+module Concerns
+  module User</p>
+
+<pre><code>module Facebook
+  extend ActiveSupport::Concern
+  included do
+    def facebook
+      @facebook ||= Koala::Facebook::API.new(oauth_token)
+      block_given? ? yield(@facebook) : @facebook
+    rescue Koala::Facebook::APIError =&gt; e
+      logger.info e.to_s
+      nil
+    end
+
+    def has_facebook_permission?(scope)
+       facebook_permissions[scope.to_s].to_i == 1 if facebook_permissions?
+    end
+
+    def cache_facebook_data?
+      favorites = %w(music books movies television games activities interests)
+      facebook do |fb|
+        result = fb.batch do |batch_api|
+          batch_api.get_connections('me', 'friends')
+          favorites.each do |favorite|
+            batch_api.get_connections('me', favorite)
+          end
+        end
+        if result.any?
+           self.facebook_friends = result[0] ? result[0] : []
+          self.facebook_favorites = result[1] ? result[1..-1].flatten : []
+          return true
+        end
+      end
+      false
+    end
+  end
+
+  module ClassMethods
+  end
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>  &#8220;`</p>
+
+<p>We define a resque worker to cache facebook data.</p>
+
+<p> &#8220;` ruby app/workers/facebook_data_cacher.rb
+class FacebookDataCacher
+  @queue = :facebook_cache_data_queue
+  def self.perform(user_id)</p>
+
+<pre><code>user = User.find user_id
+if user.facebook_data_cached_at &lt; APP_CONFIG.facebook.cache_expiry_time.ago.utc
+  if user.cache_facebook_data?
+    user.update_attribute :facebook_data_cached_at, Time.now.utc
+  end
+end
+</code></pre>
+
+<p>  end
+end
+  &#8220;`</p>
+
+<p>Here we go. The code above will get us the data we defined on our model and it will be updating and adding more data when user logins. Now it’s time to make decisions!!</p>
 ]]></content>
   </entry>
   
