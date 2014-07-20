@@ -1107,23 +1107,337 @@
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">password_reset_email</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 </span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
 </span><span class='line'>    <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span>
 </span><span class='line'>    <span class="n">mail</span><span class="p">(</span><span class="ss">to</span><span class="p">:</span> <span class="n">user</span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;user_mailer.pass_reset.subject&#39;</span><span class="p">))</span>
 </span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="ow">and</span> <span class="n">the</span> <span class="n">actual</span> <span class="n">mail</span> <span class="n">which</span> <span class="n">I</span><span class="err">’</span><span class="n">ve</span> <span class="n">only</span> <span class="n">paste</span> <span class="n">the</span> <span class="n">relevant</span> <span class="n">part</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>&#8220;` haml app/views/mailers/password_reset.html.haml</p>
+<p>and the actual mail which I’ve only paste the relevant part</p>
 
-<p> #href: &ldquo;#{edit_password_reset_url(@user.password_reset_token)}&rdquo;}=t(&ldquo;.pass_reset_link_button&rdquo;)</p>
+<figure class='code'><figcaption><span>app/views/mailers/password_reset.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>     <span class="nf">#href:</span> &quot;<span class="si">#{</span><span class="n">edit_password_reset_url</span><span class="p">(</span><span class="vi">@user</span><span class="o">.</span><span class="n">password_reset_token</span><span class="p">)</span><span class="si">}</span>&quot;}=t(&quot;.pass_reset_link_button&quot;)
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>So it works. At least omniauth-identity has tests..I really could not do test-driven with it so I’ll add the tests soon..</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T12:11:21+03:00" pubdate data-updated="true">Aug 2<sup>nd</sup>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://dl.dropbox.com/u/47336405/Selection_043.png"></p>
+
+<p>I had to present activites of a service provider to it’s users in a unique way. First thought of creating an activity stream but knew that the users won’t be reading them since the activity would be about the services of the provider- not something “social”. Then thought of creating a line graph that shows the days and works done by the provider. It wouldn’t be unique though. I thought and thought by looking at my github dashboard and idea came up. I always liked Github’s collaboration heatmap. It was unique and concise. So I decided to create my own activity heatmap.
+I needed to sort out three things in order to make it happen.
+Finding out a github-like heatmap to present activities Logging provider activites in a way that I can present on map Making mongoid and Rails 4 work with heatmap and activity logs.
+Here is how I created my activity heatmap:
+Kamisama has done great job on creating cal-heatmaps. Its obvious that github uses his work too. You can find his work on <a href="https://github.com/kamisama/cal-heatmap.">https://github.com/kamisama/cal-heatmap.</a> You have to download cal-heatmap.js, d3.js and for localisation; moment.js does great job. I had to present three activites to user;
+When provider gets selected by user. When provider returns to quote When provider does the work
+You cannot divide the activities to parts in cal-heatmap. You provide timestamps with numeric values and cal-heatmap shows the data. So I first had to fetch these three activities, count them and show them on map. Then I would present the details once the user clicks on a cell. So “get_provider_counts” counts the data in a way cal-heatmap understands, “get_activity gets” the data once I click on a cell.</p>
+
+<figure class='code'><figcaption><span>providers.js.coffee</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'> <span class="nv">initProviderShow = </span><span class="nf">-&gt;</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span>
+</span><span class='line'>      <span class="nv">url: </span><span class="s">&quot;/activities/get_provider_counts&quot;</span>
+</span><span class='line'>      <span class="nv">type: </span><span class="s">&quot;GET&quot;</span>
+</span><span class='line'>      <span class="nv">data:</span>
+</span><span class='line'>        <span class="nv">id: </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">provider_id&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+</span><span class='line'>      <span class="nv">dataType: </span><span class="s">&quot;json&quot;</span>
+</span><span class='line'>      <span class="p">).</span><span class="nx">success</span> <span class="nf">(data) -&gt;</span>
+</span><span class='line'>      <span class="nx">moment</span><span class="p">.</span><span class="nx">lang</span> <span class="s">&quot;en&quot;</span>
+</span><span class='line'>      <span class="nv">calendar = </span><span class="k">new</span> <span class="nx">CalHeatMap</span><span class="p">()</span>
+</span><span class='line'>      <span class="nx">calendar</span><span class="p">.</span><span class="nx">init</span>
+</span><span class='line'>        <span class="nv">itemSelector: </span><span class="s">&quot;</span><span class="err">#</span><span class="s">calheat&quot;</span>
+</span><span class='line'>        <span class="nv">data: </span><span class="nx">data</span>
+</span><span class='line'>        <span class="nv">start: </span><span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="nv">domain: </span><span class="s">&quot;month&quot;</span>
+</span><span class='line'>        <span class="nv">subDomain: </span><span class="s">&quot;day&quot;</span>
+</span><span class='line'>        <span class="nv">range: </span><span class="mi">7</span>
+</span><span class='line'>        <span class="nv">cellSize: </span><span class="mi">15</span>
+</span><span class='line'>        <span class="nv">cellPadding: </span><span class="mi">5</span>
+</span><span class='line'>        <span class="nv">domainGutter: </span><span class="mi">20</span>
+</span><span class='line'>        <span class="nv">displayScale: </span><span class="kc">false</span>
+</span><span class='line'>        <span class="nv">previousSelector: </span><span class="s">&quot;</span><span class="err">#</span><span class="s">calheat-PreviousDomain-selector&quot;</span>
+</span><span class='line'>        <span class="nv">nextSelector: </span><span class="s">&quot;</span><span class="err">#</span><span class="s">calheat-NextDomain-selector&quot;</span>
+</span><span class='line'>        <span class="nv">domainLabelFormat: </span><span class="nf">(date) -&gt;</span>
+</span><span class='line'>          <span class="nx">moment</span><span class="p">(</span><span class="nx">date</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="s">&quot;MMMM&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nv">subDomainDateFormat: </span><span class="nf">(date) -&gt;</span>
+</span><span class='line'>          <span class="nx">moment</span><span class="p">(</span><span class="nx">date</span><span class="p">).</span><span class="nx">format</span> <span class="s">&quot;LL&quot;</span>
+</span><span class='line'>        <span class="nv">subDomainTitleFormat:</span>
+</span><span class='line'>          <span class="nv">empty: </span><span class="s">&quot;{date} +I18n.t &quot;</span><span class="nx">shared</span><span class="p">.</span><span class="nx">navbar</span><span class="p">.</span><span class="nx">no_activites</span><span class="s">&quot;</span>
+</span><span class='line'><span class="s">          filled: &quot;</span><span class="p">{</span><span class="nx">date</span><span class="p">}</span>  <span class="p">{</span><span class="nx">count</span><span class="p">}</span> <span class="o">+</span><span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span> <span class="s">&quot;shared.navbar.has_activites&quot;</span>
+</span><span class='line'>        <span class="nv">onClick: </span><span class="nf">(date) -&gt;</span>
+</span><span class='line'>          <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span>
+</span><span class='line'>            <span class="nv">type: </span><span class="s">&quot;GET&quot;</span>
+</span><span class='line'>            <span class="nv">url: </span><span class="s">&quot;/activities/get_activity&quot;</span>
+</span><span class='line'>            <span class="nv">data: </span><span class="p">{</span> <span class="nv">id: </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">provider_id&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="nv">selected: </span><span class="nx">date</span><span class="p">}</span>
+</span><span class='line'>            <span class="nv">success: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>              <span class="nv">text1= </span><span class="s">&quot;&quot;</span>
+</span><span class='line'>              <span class="nx">text2</span> <span class="o">=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'>              <span class="nv">text3 = </span><span class="s">&quot;&quot;</span>
+</span><span class='line'>              <span class="k">if</span> <span class="nx">data</span><span class="p">.</span><span class="nx">selected</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="nv">text1 = </span><span class="nx">data</span><span class="p">.</span><span class="nx">selected</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span><span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span> <span class="s">&quot;shared.navbar.selected</span>
+</span><span class='line'><span class="s">              if data.returned &gt; 0</span>
+</span><span class='line'><span class="s">                text2 = data.returned + &quot;</span> <span class="s">&quot; +I18n.t &quot;</span><span class="nx">shared</span><span class="p">.</span><span class="nx">navbar</span><span class="p">.</span><span class="nx">returned</span>
+</span><span class='line'>              <span class="k">if</span> <span class="nx">data</span><span class="p">.</span><span class="nx">done</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="nv">text3 = </span><span class="nx">data</span><span class="p">.</span><span class="nx">done</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span> <span class="s">&quot;shared.navbar.done&quot;</span>
+</span><span class='line'>              <span class="k">if</span> <span class="nx">text1</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">text2</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">text3</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">onClick-placeholder&quot;</span><span class="p">).</span><span class="nx">html</span> <span class="nx">text1</span> <span class="o">+</span> <span class="s">&quot;&lt;br/&gt;&quot;</span> <span class="o">+</span> <span class="nx">text2</span> <span class="o">+</span> <span class="s">&quot;&lt;br/&gt;&quot;</span> <span class="o">+</span> <span class="nx">text3</span>
+</span><span class='line'>                <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">onClick-placeholder&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+</span><span class='line'>              <span class="k">else</span>
+</span><span class='line'>                <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">onClick-placeholder&quot;</span><span class="p">).</span><span class="nx">html</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>                <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">onClick-placeholder&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+</span><span class='line'>            <span class="nv">error: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>                <span class="k">return</span>
+</span><span class='line'>          <span class="k">return</span>
+</span><span class='line'>        <span class="nv">legend: </span><span class="p">[</span>
+</span><span class='line'>          <span class="mi">1</span>
+</span><span class='line'>          <span class="mi">3</span>
+</span><span class='line'>          <span class="mi">5</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>        <span class="nv">legendColors: </span><span class="p">[</span>
+</span><span class='line'>          <span class="s">&quot;</span><span class="err">#</span><span class="s">ecf5e2&quot;</span>
+</span><span class='line'>          <span class="s">&quot;</span><span class="err">#</span><span class="s">232181&quot;</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I was about to store provider activities myself but then found a great gem to sort it out. Its public_activity gem. <a href="https://github.com/pokonski/public_activity">https://github.com/pokonski/public_activity</a> It’s quote comprehensve and does support mongoid and Rails 4.
+The system I’m working on is about User creating quotes to providers. For every quote user selects up to three providers. Provider “returns” back to quote and if agrees with user, provider “does” the work. So I’m tracking the user, relation to providers collection, returned providers and providerdone.</p>
+
+<figure class='code'><figcaption><span>Quote.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="nb">require</span> <span class="s1">&#39;autoinc&#39;</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Quote</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Document</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Timestamps</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Paranoia</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Slug</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Mongoid</span><span class="o">::</span><span class="no">Autoinc</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Geocoder</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Mongoid</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">Concerns</span><span class="o">::</span><span class="no">GmapRoute</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">PublicActivity</span><span class="o">::</span><span class="no">Model</span>
+</span><span class='line'>    <span class="n">tracked</span> <span class="ss">:owner</span> <span class="o">=&gt;</span> <span class="ss">:user</span>
+</span><span class='line'>    <span class="n">tracked</span> <span class="ss">:params</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="ss">:returned_providers</span> <span class="o">=&gt;</span> <span class="ss">:returned_providers</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:providerdone</span> <span class="o">=&gt;</span> <span class="ss">:providerdone</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:providers</span> <span class="o">=&gt;</span> <span class="ss">:provider_ids</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I created a controller to store activities. Our system does not have activity streams so this will be useful for new features too. These two methods are for ajax requests I explained above.</p>
+
+<figure class='code'><figcaption><span>activities_controller.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="k">def</span> <span class="nf">get_provider_counts</span>
+</span><span class='line'>      <span class="vi">@provider</span> <span class="o">=</span> <span class="no">Provider</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@activities</span> <span class="o">=</span> <span class="no">PublicActivity</span><span class="o">::</span><span class="no">Activity</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>      <span class="n">selected_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.providers&quot;</span><span class="o">=&gt;</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.create&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group_by</span> <span class="p">{</span><span class="o">|</span><span class="n">d</span><span class="o">|</span> <span class="n">d</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">to_i</span><span class="p">}</span>
+</span><span class='line'>      <span class="n">returned_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.returned_providers&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.update&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group_by</span> <span class="p">{</span><span class="o">|</span><span class="n">d</span><span class="o">|</span> <span class="n">d</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">to_i</span><span class="p">}</span>
+</span><span class='line'>      <span class="n">done_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.providerdone&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.update&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group_by</span> <span class="p">{</span><span class="o">|</span><span class="n">d</span><span class="o">|</span> <span class="n">d</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">to_i</span><span class="p">}</span>
+</span><span class='line'>      <span class="vi">@caldata</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="n">seldata</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="n">retdata</span> <span class="o">=</span><span class="p">{}</span>
+</span><span class='line'>      <span class="n">donedata</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="n">selected_providers</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">provider</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">seldata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">provider</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=&gt;</span> <span class="n">provider</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">count</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">returned_providers</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">provider</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">retdata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">provider</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=&gt;</span> <span class="n">provider</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">count</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">done_providers</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">provider</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">donedata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">provider</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=&gt;</span> <span class="n">provider</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">count</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="vi">@caldata</span> <span class="o">=</span> <span class="n">donedata</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">retdata</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">oldval</span><span class="p">,</span> <span class="n">newval</span><span class="o">|</span> <span class="n">newval</span> <span class="o">+</span> <span class="n">oldval</span><span class="p">}</span>
+</span><span class='line'>      <span class="vi">@caldata</span> <span class="o">=</span> <span class="vi">@caldata</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">seldata</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">oldval</span><span class="p">,</span> <span class="n">newval</span><span class="o">|</span> <span class="n">newval</span> <span class="o">+</span> <span class="n">oldval</span><span class="p">}</span>
+</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">json</span>  <span class="p">{</span> <span class="n">render</span> <span class="ss">:json</span> <span class="o">=&gt;</span> <span class="vi">@caldata</span><span class="o">.</span><span class="n">to_json</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_activity</span>
+</span><span class='line'>      <span class="vi">@provider</span> <span class="o">=</span> <span class="no">Provider</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">date</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:selected</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@activities</span> <span class="o">=</span> <span class="no">PublicActivity</span><span class="o">::</span><span class="no">Activity</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>      <span class="n">selected_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.providers&quot;</span><span class="o">=&gt;</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span><span class="ss">:created_at</span><span class="o">=&gt;</span><span class="n">date</span><span class="o">.</span><span class="n">beginning_of_day</span><span class="o">.</span><span class="n">.date</span><span class="o">.</span><span class="n">end_of_day</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.create&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">returned_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.returned_providers&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="ss">:created_at</span><span class="o">=&gt;</span><span class="n">date</span><span class="o">.</span><span class="n">beginning_of_day</span><span class="o">.</span><span class="n">.date</span><span class="o">.</span><span class="n">end_of_day</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.update&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">done_providers</span> <span class="o">=</span><span class="vi">@activities</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;parameters.providerdone&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@provider</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="ss">:created_at</span><span class="o">=&gt;</span><span class="n">date</span><span class="o">.</span><span class="n">beginning_of_day</span><span class="o">.</span><span class="n">.date</span><span class="o">.</span><span class="n">end_of_day</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;quote.update&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">json</span>  <span class="p">{</span> <span class="n">render</span> <span class="ss">:json</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:selected</span><span class="o">=&gt;</span> <span class="n">selected_providers</span><span class="o">.</span><span class="n">count</span><span class="p">,</span><span class="ss">:returned</span> <span class="o">=&gt;</span><span class="n">returned_providers</span><span class="o">.</span><span class="n">count</span><span class="p">,</span><span class="ss">:done</span><span class="o">=&gt;</span><span class="n">done_providers</span><span class="o">.</span><span class="n">count</span><span class="p">}}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally the view to show cal-heatmap</p>
+
+<figure class='code'><figcaption><span>providers/show.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%div</span>
+</span><span class='line'>  <span class="nf">#calheat</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span> <span class="s2">&quot;position:relative;&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nt">%p</span>
+</span><span class='line'>  <span class="nt">%button</span><span class="nf">#calheat-PreviousDomain-selector</span><span class="nc">.btn.btn-mini</span>
+</span><span class='line'>    <span class="nt">%i</span><span class="nc">.icon.icon-chevron-left</span>
+</span><span class='line'>  <span class="nt">%button</span><span class="nf">#calheat-NextDomain-selector</span><span class="nc">.btn.btn-mini</span>
+</span><span class='line'>    <span class="nt">%i</span><span class="nc">.icon.icon-chevron-right</span>
+</span><span class='line'>  <span class="nt">%h5</span><span class="p">{</span><span class="ss">style</span><span class="p">:</span><span class="s2">&quot;text-align: center;margin-top: -10px;&quot;</span><span class="p">}</span>
+</span><span class='line'>        <span class="nf">#onClick-placeholder</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -1153,6 +1467,10 @@
     
       <li class="post">
         <a href="/blog/2014/02/09/full-login-system-out-of-omniauth-identity-with-mongoid-and-jquery-validations/">Full Login System Out of Omniauth-identity With Mongoid and Jquery Validations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/creating-activity-cal-heatmap-using-public-activity-and-mongoid/">Creating Activity Cal-heatmap Using Public_activity and Mongoid</a>
       </li>
     
   </ul>
