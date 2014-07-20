@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: fancytree.js | My Octopress Blog]]></title>
+  <title><![CDATA[Category: fancytree.js | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/fancytree-dot-js/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-21T00:38:33+03:00</updated>
+  <updated>2014-07-21T00:45:59+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Caner Cakmak]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -19,17 +19,19 @@
     <updated>2014-07-18T23:36:40+03:00</updated>
     <id>http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees</id>
     <content type="html"><![CDATA[<p>Been 4-5 years since I started developing Ruby on Rails and I just don&rsquo;t remember using tree views.
-Used them a lot in .NET development but somehow did not in Rails. This reminds me the KISS principle actually.
-I guess Bootstrap forms and components make us present collective data in a simple manner so we don&rsquo;t tend to
-use treeviews to present things &ldquo;all-in-one&rdquo;.
-And for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
+Used them a lot in .NET development but somehow did not after that. This reminds me the KISS principle actually.
+I guess Rails with Bootstrap forms and components make us present collective data in a simple manner so we don&rsquo;t tend to
+use treeviews to present things &ldquo;all-in-one&rdquo;.</p>
+
+<p>By the way for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
 I had to make a company official to select the services they offer to customers. Services had 3-level categories
 and the lowest level had multiple variations. When I think of the word &ldquo;select&rdquo; in Rails, I instantly remember my friend
 Select2. I feed the JSON, Select2 presents and makes the user select things.
 However in this case user had to select services from ever growing thousand of services. He had to view all categories at once (obviously the top ones first),
 he had to filter them and for sure he had to select multiples of services.
-Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.
-Things seemed right first however there was a catch.
+Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.</p>
+
+<p>Things seemed right first however there was a catch.
 Think of google. You want to search for a wikipedia article but just can&rsquo;t it with the keywords you write.
 Then you go to wikipedia, find a related category and you reach to the article you find by looking at its parent or child categories.
 This was the case for selecting services. When using select2 user could filter the services he is giving and would deinitely reach to them,
@@ -47,13 +49,7 @@ would check all the child nodes. Then bumped to Fancy tree which was exceptional
 
 <p>For embedding fancytree goto <a href="https://github.com/mar10/fancytree/wiki">https://github.com/mar10/fancytree/wiki</a></p>
 
-<p>``` haml application.html.haml</p>
-
-<p>%link{href: &ldquo;fancytree/skin-win8/ui.fancytree.min.css&rdquo;, rel: &ldquo;stylesheet&rdquo;, type: &ldquo;text/css&rdquo;}/
-%script{src: &ldquo;fancytree/jquery.fancytree-all.min.js&rdquo;, type: &ldquo;text/javascript&rdquo;}</p>
-
-<p>```
-Basically you have include js and css. I included them in my assets tree so that code doesn&rsquo;t apply to me.
+<p>Basically you have include the actual js and css. If you use bootstrap include the glyph extension too.
 Here is how I used FancyTree. It has checkbox and filtering functionality. Highlighting and selection part
 is unique to my needs.</p>
 

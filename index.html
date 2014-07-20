@@ -5,8 +5,8 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
-  <meta name="author" content="Your Name">
+  <title>Caner's Ruby on rails blog</title>
+  <meta name="author" content="Caner Cakmak">
 
   
   <meta name="description" content="Been 4-5 years since I started developing Ruby on Rails and I just don&rsquo;t remember using tree views.
@@ -22,7 +22,7 @@ Used them a lot in .NET development but &hellip;">
   <link rel="canonical" href="http://canercak.github.io">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="Caner's Ruby on rails blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -37,9 +37,9 @@ Used them a lot in .NET development but &hellip;">
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
+  <h1><a href="/">Caner's Ruby on rails blog</a></h1>
   
-    <h2>A blogging framework for hackers.</h2>
+    <h2>It's all about the beauty of Ruby. I'm not a "Guru", not a "Rock Star" or "Ninja" at all. But I can do every single thing I need and I enjoy so much because I'm in love with her beauty</h2>
   
 </hgroup>
 
@@ -96,17 +96,19 @@ Used them a lot in .NET development but &hellip;">
 
 
   <div class="entry-content"><p>Been 4-5 years since I started developing Ruby on Rails and I just don&rsquo;t remember using tree views.
-Used them a lot in .NET development but somehow did not in Rails. This reminds me the KISS principle actually.
-I guess Bootstrap forms and components make us present collective data in a simple manner so we don&rsquo;t tend to
-use treeviews to present things &ldquo;all-in-one&rdquo;.
-And for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
+Used them a lot in .NET development but somehow did not after that. This reminds me the KISS principle actually.
+I guess Rails with Bootstrap forms and components make us present collective data in a simple manner so we don&rsquo;t tend to
+use treeviews to present things &ldquo;all-in-one&rdquo;.</p>
+
+<p>By the way for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
 I had to make a company official to select the services they offer to customers. Services had 3-level categories
 and the lowest level had multiple variations. When I think of the word &ldquo;select&rdquo; in Rails, I instantly remember my friend
 Select2. I feed the JSON, Select2 presents and makes the user select things.
 However in this case user had to select services from ever growing thousand of services. He had to view all categories at once (obviously the top ones first),
 he had to filter them and for sure he had to select multiples of services.
-Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.
-Things seemed right first however there was a catch.
+Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.</p>
+
+<p>Things seemed right first however there was a catch.
 Think of google. You want to search for a wikipedia article but just can&rsquo;t it with the keywords you write.
 Then you go to wikipedia, find a related category and you reach to the article you find by looking at its parent or child categories.
 This was the case for selecting services. When using select2 user could filter the services he is giving and would deinitely reach to them,
@@ -124,14 +126,7 @@ would check all the child nodes. Then bumped to Fancy tree which was exceptional
 
 <p>For embedding fancytree goto <a href="https://github.com/mar10/fancytree/wiki">https://github.com/mar10/fancytree/wiki</a></p>
 
-<figure class='code'><figcaption><span>application.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%link</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;fancytree/skin-win8/ui.fancytree.min.css&quot;</span><span class="p">,</span> <span class="ss">rel</span><span class="p">:</span> <span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;text/css&quot;</span><span class="p">}/</span>
-</span><span class='line'><span class="nt">%script</span><span class="p">{</span><span class="ss">src</span><span class="p">:</span> <span class="s2">&quot;fancytree/jquery.fancytree-all.min.js&quot;</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;text/javascript&quot;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Basically you have include js and css. I included them in my assets tree so that code doesn&rsquo;t apply to me.
+<p>Basically you have include the actual js and css. If you use bootstrap include the glyph extension too.
 Here is how I used FancyTree. It has checkbox and filtering functionality. Highlighting and selection part
 is unique to my needs.</p>
 
@@ -2462,7 +2457,7 @@ The system I’m working on is about User creating quotes to providers. For ever
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Your Name -
+  Copyright &copy; 2014 - Caner Cakmak -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

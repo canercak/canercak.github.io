@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Omniauth | My Octopress Blog]]></title>
+  <title><![CDATA[Category: Omniauth | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/omniauth/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-21T00:38:33+03:00</updated>
+  <updated>2014-07-21T00:45:59+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Caner Cakmak]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
