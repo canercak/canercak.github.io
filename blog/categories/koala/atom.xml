@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Koala, | My Octopress Blog]]></title>
   <link href="http://canercak.github.io/blog/categories/koala/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-20T22:30:27+03:00</updated>
+  <updated>2014-07-20T22:33:08+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -48,48 +48,42 @@ set :cache_expiry_time, 7.days
 
 <p>``` ruby config/initialisers/omniauth.rb</p>
 
-<p>OmniAuth.config.logger = Rails.logger
+<pre><code>OmniAuth.config.logger = Rails.logger
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook,</p>
-
-<pre><code>APP_CONFIG.facebook.app_id,
-APP_CONFIG.facebook.app_secret,
-{ scope: APP_CONFIG.facebook.scope }
+  provider :facebook,
+    APP_CONFIG.facebook.app_id,
+    APP_CONFIG.facebook.app_secret,
+    { scope: APP_CONFIG.facebook.scope }
+end
 </code></pre>
-
-<p>end</p>
 
 <p>```</p>
 
 <p>``` ruby</p>
 
-<p>OmniAuth.config.logger = Rails.logger
+<pre><code>OmniAuth.config.logger = Rails.logger
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook,</p>
-
-<pre><code>APP_CONFIG.facebook.app_id,
-APP_CONFIG.facebook.app_secret,
-{ scope: APP_CONFIG.facebook.scope }
+  provider :facebook,
+    APP_CONFIG.facebook.app_id,
+    APP_CONFIG.facebook.app_secret,
+    { scope: APP_CONFIG.facebook.scope }
+end
 </code></pre>
-
-<p>end</p>
 
 <p>```</p>
 
 <p>The haml view for our big facebook button.</p>
 
-<p>``` ruby  views/pages/_facebook_login.html.haml</p>
+<p>``` haml  views/pages/_facebook_login.html.haml</p>
 
-<p>.hidden-phone
-  = link_to auth_at_provider_path(provider: :facebook), class: &lsquo;btn btn-large btn-facebook&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true } do</p>
-
-<pre><code>%i.icon-facebook-sign.icon-large
-= t('login_with_facebook')
+<pre><code>.hidden-phone
+  = link_to auth_at_provider_path(provider: :facebook), class: 'btn btn-large btn-facebook', data: { :"no-turbolink" =&gt; true } do
+    %i.icon-facebook-sign.icon-large
+    = t('login_with_facebook')
+%p.signin-terms
+  %b= t('we_will_never_post')
+  %br= t('pages.home.signin_terms', appname: APP_CONFIG.app_name, terms_link: link_to(t('terms'), :terms, :target=&gt; '_blank', data: { :"no-turbolink" =&gt; true }), policy_link: link_to(t('policy'), :policy, :target=&gt; '_blank')).html_safe
 </code></pre>
-
-<p>%p.signin-terms
-  %b= t(&lsquo;we_will_never_post&rsquo;)
-  %br= t(&lsquo;pages.home.signin_terms&rsquo;, appname: APP_CONFIG.app_name, terms_link: link_to(t(&lsquo;terms&rsquo;), :terms, :target=> &lsquo;<em>blank&rsquo;, data: { :&ldquo;no-turbolink&rdquo; => true }), policy_link: link_to(t(&lsquo;policy&rsquo;), :policy, :target=> &lsquo;</em>blank&rsquo;)).html_safe</p>
 
 <p>```</p>
 
@@ -108,20 +102,21 @@ APP_CONFIG.facebook.app_secret,
 
 <p>Here is the user model. Removed the nonrelevant fields. As you can see I’m collecting enough data to make decisions.</p>
 
-<p>``` ruby app/models/user.rb
-class User
+<p>``` ruby app/models/user.rb</p>
+
+<pre><code>class User
   include Mongoid::Document
   include ::Concerns::User::Authentication
-  include ::Concerns::User::Facebook</p>
+  include ::Concerns::User::Facebook
 
-<p>  field :provider
+  field :provider
   field :uid
   field :oauth_token
   field :oauth_expires_at
   field :facebook_permissions, type: Array, default: []
   field :facebook_friends, type: Array, default: []
   field :facebook_favorites, type: Array, default: []
-  field :facebook_data_cached_at, type: DateTime, default: &lsquo;2014-01-01&rsquo;
+  field :facebook_data_cached_at, type: DateTime, default: '2014-01-01'
   field :gender
   field :username
   field :bio
@@ -131,7 +126,8 @@ class User
   field :education, type: Hash, default: {}
   field :email
   field :name
-  field :facebook_verified, type: Boolean, default: false</p>
+  field :facebook_verified, type: Boolean, default: false
+</code></pre>
 
 <p>```</p>
 
@@ -139,137 +135,133 @@ class User
 
 <p>``` ruby app/models/concerns/authentication.rb</p>
 
-<p>module Concerns
-  module User</p>
+<pre><code>module Concerns
+  module User
+    module Authentication
+      extend ActiveSupport::Concern
 
-<pre><code>module Authentication
-  extend ActiveSupport::Concern
+      included do
+        def set_fields_from_omniauth(auth)
+          set_credentials auth.credentials
+          set_info auth.info
+          set_extra_raw_info auth.extra.raw_info
+          set_extra_raw_info_special_permissions auth.extra.raw_info
+          set_permissions
+          Resque.enqueue(FacebookDataCacher, id)
+        rescue Redis::CannotConnectError
+        end
 
-  included do
-    def set_fields_from_omniauth(auth)
-      set_credentials auth.credentials
-      set_info auth.info
-      set_extra_raw_info auth.extra.raw_info
-      set_extra_raw_info_special_permissions auth.extra.raw_info
-      set_permissions
-      Resque.enqueue(FacebookDataCacher, id)
-    rescue Redis::CannotConnectError
-    end
+        private
+        def set_credentials(credentials)
+          self.oauth_token = credentials.token
+          self.oauth_expires_at =  Time.at credentials.expires_at || Time.now
+        end
 
-    private
-    def set_credentials(credentials)
-      self.oauth_token = credentials.token
-      self.oauth_expires_at =  Time.at credentials.expires_at || Time.now
-    end
-
-    def set_info(info)
-      self.email = info.email
-      self.name = info.name
-      self.facebook_verified = info.verified || false
-    end
-    def set_extra_raw_info(raw_info)
-      self.username = raw_info.username
-      self.gender = raw_info.gender
-      self.bio = raw_info.bio
-      self.languages = raw_info.languages || {}
-    end
-    def set_extra_raw_info_special_permissions(raw_info)
-      self.birthday = Date.strptime(raw_info.birthday, "%m/%d/%Y").at_midnight if raw_info.birthday
-      self.work = raw_info.work || {}
-      self.education = raw_info.education || {}
-    end
-    def set_permissions
-      facebook do |fb|
-        self.facebook_permissions = fb.get_connections('me', 'permissions')[0]
+        def set_info(info)
+          self.email = info.email
+          self.name = info.name
+          self.facebook_verified = info.verified || false
+        end
+        def set_extra_raw_info(raw_info)
+          self.username = raw_info.username
+          self.gender = raw_info.gender
+          self.bio = raw_info.bio
+          self.languages = raw_info.languages || {}
+        end
+        def set_extra_raw_info_special_permissions(raw_info)
+          self.birthday = Date.strptime(raw_info.birthday, "%m/%d/%Y").at_midnight if raw_info.birthday
+          self.work = raw_info.work || {}
+          self.education = raw_info.education || {}
+        end
+        def set_permissions
+          facebook do |fb|
+            self.facebook_permissions = fb.get_connections('me', 'permissions')[0]
+          end
+        end
       end
-    end
-  end
 
-  module ClassMethods
-    def from_omniauth(auth)
-      user = where(auth.slice(:provider, :uid)).first_or_initialize
-      user.provider = auth.provider
-      user.uid = auth.uid
-      user.set_fields_from_omniauth auth
-      user.save!
-      user
+      module ClassMethods
+        def from_omniauth(auth)
+          user = where(auth.slice(:provider, :uid)).first_or_initialize
+          user.provider = auth.provider
+          user.uid = auth.uid
+          user.set_fields_from_omniauth auth
+          user.save!
+          user
+        end
+      end
     end
   end
 end
 </code></pre>
-
-<p>  end
-end</p>
 
 <p>```</p>
 
 <p>This module is for caching data. I’m making resque collect more and more details. We will run resque workers to get them. You can also schedule the process with resque scheduler. Checkout facebook graph api for more data to get. And checkout resque gem for details.</p>
 
-<p>``` ruby app/models/concerns/facebook.rb
-module Concerns
-  module User</p>
+<p>``` ruby app/models/concerns/facebook.rb</p>
 
-<pre><code>module Facebook
-  extend ActiveSupport::Concern
-  included do
-    def facebook
-      @facebook ||= Koala::Facebook::API.new(oauth_token)
-      block_given? ? yield(@facebook) : @facebook
-    rescue Koala::Facebook::APIError =&gt; e
-      logger.info e.to_s
-      nil
-    end
-
-    def has_facebook_permission?(scope)
-       facebook_permissions[scope.to_s].to_i == 1 if facebook_permissions?
-    end
-
-    def cache_facebook_data?
-      favorites = %w(music books movies television games activities interests)
-      facebook do |fb|
-        result = fb.batch do |batch_api|
-          batch_api.get_connections('me', 'friends')
-          favorites.each do |favorite|
-            batch_api.get_connections('me', favorite)
-          end
+<pre><code>module Concerns
+  module User
+    module Facebook
+      extend ActiveSupport::Concern
+      included do
+        def facebook
+          @facebook ||= Koala::Facebook::API.new(oauth_token)
+          block_given? ? yield(@facebook) : @facebook
+        rescue Koala::Facebook::APIError =&gt; e
+          logger.info e.to_s
+          nil
         end
-        if result.any?
-           self.facebook_friends = result[0] ? result[0] : []
-          self.facebook_favorites = result[1] ? result[1..-1].flatten : []
-          return true
+
+        def has_facebook_permission?(scope)
+           facebook_permissions[scope.to_s].to_i == 1 if facebook_permissions?
+        end
+
+        def cache_facebook_data?
+          favorites = %w(music books movies television games activities interests)
+          facebook do |fb|
+            result = fb.batch do |batch_api|
+              batch_api.get_connections('me', 'friends')
+              favorites.each do |favorite|
+                batch_api.get_connections('me', favorite)
+              end
+            end
+            if result.any?
+               self.facebook_friends = result[0] ? result[0] : []
+              self.facebook_favorites = result[1] ? result[1..-1].flatten : []
+              return true
+            end
+          end
+          false
         end
       end
-      false
-    end
-  end
 
-  module ClassMethods
+      module ClassMethods
+      end
+    end
   end
 end
 </code></pre>
-
-<p>  end
-end</p>
 
 <p>```</p>
 
 <p>We define a resque worker to cache facebook data.</p>
 
-<p>``` ruby app/workers/facebook_data_cacher.rb
-class FacebookDataCacher
-  @queue = :facebook_cache_data_queue
-  def self.perform(user_id)</p>
+<p>``` ruby app/workers/facebook_data_cacher.rb</p>
 
-<pre><code>user = User.find user_id
-if user.facebook_data_cached_at &lt; APP_CONFIG.facebook.cache_expiry_time.ago.utc
-  if user.cache_facebook_data?
-    user.update_attribute :facebook_data_cached_at, Time.now.utc
+<pre><code>class FacebookDataCacher
+  @queue = :facebook_cache_data_queue
+  def self.perform(user_id)
+    user = User.find user_id
+    if user.facebook_data_cached_at &lt; APP_CONFIG.facebook.cache_expiry_time.ago.utc
+      if user.cache_facebook_data?
+        user.update_attribute :facebook_data_cached_at, Time.now.utc
+      end
+    end
   end
 end
 </code></pre>
-
-<p>  end
-end</p>
 
 <p>```</p>
 

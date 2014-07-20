@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://canercak.github.io/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-20T22:30:27+03:00</updated>
+  <updated>2014-07-20T22:33:08+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -65,13 +65,13 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">OmniAuth</span><span class="o">::</span><span class="no">Builder</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
-</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
-</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
+</span><span class='line'>  <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">OmniAuth</span><span class="o">::</span><span class="no">Builder</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
+</span><span class='line'>      <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
+</span><span class='line'>      <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -84,13 +84,13 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
-</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">OmniAuth</span><span class="o">::</span><span class="no">Builder</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
-</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
-</span><span class='line'>    <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="no">OmniAuth</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span>
+</span><span class='line'>  <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">OmniAuth</span><span class="o">::</span><span class="no">Builder</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span>
+</span><span class='line'>      <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_id</span><span class="p">,</span>
+</span><span class='line'>      <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">app_secret</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">facebook</span><span class="o">.</span><span class="n">scope</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -104,14 +104,14 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>
-</span><span class='line'><span class="o">.</span><span class="n">hidden</span><span class="o">-</span><span class="n">phone</span>
-</span><span class='line'>  <span class="o">=</span> <span class="n">link_to</span> <span class="n">auth_at_provider_path</span><span class="p">(</span><span class="ss">provider</span><span class="p">:</span> <span class="ss">:facebook</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-large btn-facebook&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span> <span class="k">do</span>
-</span><span class='line'>    <span class="o">%</span><span class="n">i</span><span class="o">.</span><span class="n">icon</span><span class="o">-</span><span class="n">facebook</span><span class="o">-</span><span class="n">sign</span><span class="o">.</span><span class="n">icon</span><span class="o">-</span><span class="n">large</span>
-</span><span class='line'>    <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;login_with_facebook&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="o">%</span><span class="nb">p</span><span class="o">.</span><span class="n">signin</span><span class="o">-</span><span class="n">terms</span>
-</span><span class='line'>  <span class="o">%</span><span class="n">b</span><span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;we_will_never_post&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="o">%</span><span class="n">br</span><span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;pages.home.signin_terms&#39;</span><span class="p">,</span> <span class="ss">appname</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span> <span class="n">terms_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;terms&#39;</span><span class="p">),</span> <span class="ss">:terms</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}),</span> <span class="n">policy_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;policy&#39;</span><span class="p">),</span> <span class="ss">:policy</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">html_safe</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>
+</span><span class='line'>  <span class="nc">.hidden-phone</span>
+</span><span class='line'>    <span class="p">=</span> <span class="n">link_to</span> <span class="n">auth_at_provider_path</span><span class="p">(</span><span class="ss">provider</span><span class="p">:</span> <span class="ss">:facebook</span><span class="p">),</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-large btn-facebook&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span> <span class="k">do</span>
+</span><span class='line'>      <span class="nt">%i</span><span class="nc">.icon-facebook-sign.icon-large</span>
+</span><span class='line'>      <span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;login_with_facebook&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nt">%p</span><span class="nc">.signin-terms</span>
+</span><span class='line'>    <span class="nt">%b</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;we_will_never_post&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nt">%br</span><span class="p">=</span> <span class="n">t</span><span class="p">(</span><span class="s1">&#39;pages.home.signin_terms&#39;</span><span class="p">,</span> <span class="ss">appname</span><span class="p">:</span> <span class="no">APP_CONFIG</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span> <span class="n">terms_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;terms&#39;</span><span class="p">),</span> <span class="ss">:terms</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">:&quot;no-turbolink&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}),</span> <span class="n">policy_link</span><span class="p">:</span> <span class="n">link_to</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="s1">&#39;policy&#39;</span><span class="p">),</span> <span class="ss">:policy</span><span class="p">,</span> <span class="ss">:target</span><span class="o">=&gt;</span> <span class="s1">&#39;_blank&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">html_safe</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -245,64 +245,64 @@
 <span class='line-number'>56</span>
 <span class='line-number'>57</span>
 <span class='line-number'>58</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Concerns</span>
-</span><span class='line'>  <span class="k">module</span> <span class="nn">User</span>
-</span><span class='line'>    <span class="k">module</span> <span class="nn">Authentication</span>
-</span><span class='line'>      <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="k">module</span> <span class="nn">Concerns</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">User</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">Authentication</span>
+</span><span class='line'>        <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
 </span><span class='line'>
-</span><span class='line'>      <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_fields_from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">set_credentials</span> <span class="n">auth</span><span class="o">.</span><span class="n">credentials</span>
-</span><span class='line'>          <span class="n">set_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">info</span>
-</span><span class='line'>          <span class="n">set_extra_raw_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
-</span><span class='line'>          <span class="n">set_extra_raw_info_special_permissions</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
-</span><span class='line'>          <span class="n">set_permissions</span>
-</span><span class='line'>          <span class="no">Resque</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="no">FacebookDataCacher</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">rescue</span> <span class="no">Redis</span><span class="o">::</span><span class="no">CannotConnectError</span>
-</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_fields_from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">set_credentials</span> <span class="n">auth</span><span class="o">.</span><span class="n">credentials</span>
+</span><span class='line'>            <span class="n">set_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">info</span>
+</span><span class='line'>            <span class="n">set_extra_raw_info</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
+</span><span class='line'>            <span class="n">set_extra_raw_info_special_permissions</span> <span class="n">auth</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">raw_info</span>
+</span><span class='line'>            <span class="n">set_permissions</span>
+</span><span class='line'>            <span class="no">Resque</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="no">FacebookDataCacher</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">rescue</span> <span class="no">Redis</span><span class="o">::</span><span class="no">CannotConnectError</span>
+</span><span class='line'>          <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>        <span class="kp">private</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_credentials</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">oauth_token</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">token</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">oauth_expires_at</span> <span class="o">=</span>  <span class="no">Time</span><span class="o">.</span><span class="n">at</span> <span class="n">credentials</span><span class="o">.</span><span class="n">expires_at</span> <span class="o">||</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
-</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>          <span class="kp">private</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_credentials</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">oauth_token</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">token</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">oauth_expires_at</span> <span class="o">=</span>  <span class="no">Time</span><span class="o">.</span><span class="n">at</span> <span class="n">credentials</span><span class="o">.</span><span class="n">expires_at</span> <span class="o">||</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+</span><span class='line'>          <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_info</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">email</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">facebook_verified</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">verified</span> <span class="o">||</span> <span class="kp">false</span>
-</span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_extra_raw_info</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">username</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">gender</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">bio</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">bio</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">languages</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">languages</span> <span class="o">||</span> <span class="p">{}</span>
-</span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_extra_raw_info_special_permissions</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">birthday</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span><span class="p">,</span> <span class="s2">&quot;%m/%d/%Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">at_midnight</span> <span class="k">if</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">work</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">work</span> <span class="o">||</span> <span class="p">{}</span>
-</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">education</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">education</span> <span class="o">||</span> <span class="p">{}</span>
-</span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">set_permissions</span>
-</span><span class='line'>          <span class="n">facebook</span> <span class="k">do</span> <span class="o">|</span><span class="n">fb</span><span class="o">|</span>
-</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">facebook_permissions</span> <span class="o">=</span> <span class="n">fb</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;permissions&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_info</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">email</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">facebook_verified</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">verified</span> <span class="o">||</span> <span class="kp">false</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_extra_raw_info</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">username</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">gender</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">bio</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">bio</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">languages</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">languages</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_extra_raw_info_special_permissions</span><span class="p">(</span><span class="n">raw_info</span><span class="p">)</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">birthday</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span><span class="p">,</span> <span class="s2">&quot;%m/%d/%Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">at_midnight</span> <span class="k">if</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">birthday</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">work</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">work</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">education</span> <span class="o">=</span> <span class="n">raw_info</span><span class="o">.</span><span class="n">education</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">set_permissions</span>
+</span><span class='line'>            <span class="n">facebook</span> <span class="k">do</span> <span class="o">|</span><span class="n">fb</span><span class="o">|</span>
+</span><span class='line'>              <span class="nb">self</span><span class="o">.</span><span class="n">facebook_permissions</span> <span class="o">=</span> <span class="n">fb</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;permissions&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>            <span class="k">end</span>
 </span><span class='line'>          <span class="k">end</span>
 </span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>      <span class="k">module</span> <span class="nn">ClassMethods</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
-</span><span class='line'>          <span class="n">user</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="ss">:provider</span><span class="p">,</span> <span class="ss">:uid</span><span class="p">))</span><span class="o">.</span><span class="n">first_or_initialize</span>
-</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">provider</span>
-</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">uid</span>
-</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">set_fields_from_omniauth</span> <span class="n">auth</span>
-</span><span class='line'>          <span class="n">user</span><span class="o">.</span><span class="n">save!</span>
-</span><span class='line'>          <span class="n">user</span>
+</span><span class='line'>        <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>          <span class="k">def</span> <span class="nf">from_omniauth</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">user</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="ss">:provider</span><span class="p">,</span> <span class="ss">:uid</span><span class="p">))</span><span class="o">.</span><span class="n">first_or_initialize</span>
+</span><span class='line'>            <span class="n">user</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">provider</span>
+</span><span class='line'>            <span class="n">user</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">uid</span>
+</span><span class='line'>            <span class="n">user</span><span class="o">.</span><span class="n">set_fields_from_omniauth</span> <span class="n">auth</span>
+</span><span class='line'>            <span class="n">user</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>            <span class="n">user</span>
+</span><span class='line'>          <span class="k">end</span>
 </span><span class='line'>        <span class="k">end</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="k">end</span>
 </span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
