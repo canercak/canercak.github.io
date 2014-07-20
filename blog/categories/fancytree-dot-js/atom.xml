@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: fancytree.js | My Octopress Blog]]></title>
+  <link href="http://canercak.github.io/blog/categories/fancytree-dot-js/atom.xml" rel="self"/>
+  <link href="http://canercak.github.io/"/>
+  <updated>2014-07-21T00:38:33+03:00</updated>
+  <id>http://canercak.github.io/</id>
+  <author>
+    <name><![CDATA[Your Name]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Fancy Return to Old School Trees]]></title>
+    <link href="http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees/"/>
+    <updated>2014-07-18T23:36:40+03:00</updated>
+    <id>http://canercak.github.io/blog/2014/07/18/fancy-return-to-old-school-trees</id>
+    <content type="html"><![CDATA[<p>Been 4-5 years since I started developing Ruby on Rails and I just don&rsquo;t remember using tree views.
+Used them a lot in .NET development but somehow did not in Rails. This reminds me the KISS principle actually.
+I guess Bootstrap forms and components make us present collective data in a simple manner so we don&rsquo;t tend to
+use treeviews to present things &ldquo;all-in-one&rdquo;.
+And for the case I will explain now, I didn&rsquo;t use a treeview at first actually. I used select2.
+I had to make a company official to select the services they offer to customers. Services had 3-level categories
+and the lowest level had multiple variations. When I think of the word &ldquo;select&rdquo; in Rails, I instantly remember my friend
+Select2. I feed the JSON, Select2 presents and makes the user select things.
+However in this case user had to select services from ever growing thousand of services. He had to view all categories at once (obviously the top ones first),
+he had to filter them and for sure he had to select multiples of services.
+Created the JSON data at first and remotely fed it to Select2. User could see the categories, filter them and select.
+Things seemed right first however there was a catch.
+Think of google. You want to search for a wikipedia article but just can&rsquo;t it with the keywords you write.
+Then you go to wikipedia, find a related category and you reach to the article you find by looking at its parent or child categories.
+This was the case for selecting services. When using select2 user could filter the services he is giving and would deinitely reach to them,
+however he would never see the &ldquo;map&rdquo; of those thousands of categories and for sure he would not include the exact services he is offering. find,
+I knew this could undermine the user experience so I returned to my old school friend treeview.</p>
+
+<p>I had to find a treeview component to use with Rails with JSON, checkbox and filtering functionality. First checked out jstree however it was useless since clicking a node
+would check all the child nodes. Then bumped to Fancy tree which was exceptionally well-done.</p>
+
+<p>Here is the result</p>
+
+<p><img class="<a" src="href="http://dl.dropbox.com/u/47336405/Selection_002.png">http://dl.dropbox.com/u/47336405/Selection_002.png</a>"></p>
+
+<p>And here is how I used it:</p>
+
+<p>For embedding fancytree goto <a href="https://github.com/mar10/fancytree/wiki">https://github.com/mar10/fancytree/wiki</a></p>
+
+<p>``` haml application.html.haml</p>
+
+<p>%link{href: &ldquo;fancytree/skin-win8/ui.fancytree.min.css&rdquo;, rel: &ldquo;stylesheet&rdquo;, type: &ldquo;text/css&rdquo;}/
+%script{src: &ldquo;fancytree/jquery.fancytree-all.min.js&rdquo;, type: &ldquo;text/javascript&rdquo;}</p>
+
+<p>```
+Basically you have include js and css. I included them in my assets tree so that code doesn&rsquo;t apply to me.
+Here is how I used FancyTree. It has checkbox and filtering functionality. Highlighting and selection part
+is unique to my needs.</p>
+
+<p>``` coffeescript provider.js.coffee</p>
+
+<pre><code>$("#tree").fancytree
+    activeVisible: true  
+    aria: false  
+    autoActivate: true 
+    #autoCollapse: true  
+    autoScroll: true  
+    clickFolderMode: 3  
+    checkbox: true  
+    debugLevel: 0  
+    disabled: false  
+    generateIds: false  
+    idPrefix: "ft_"  
+    icons: false  
+    keyboard: true  
+    keyPathSeparator: "/"  
+    minExpandLevel: 1  
+    selectMode: 3  
+    tabbable: true  
+    titlesTabbable: true  
+    strings: 
+        loading: "yükleniyor..."
+        loadError: "yükleme başarısız"  
+    extensions: [
+        "filter"
+        "glyph"
+    ]
+    filter:
+        mode: "dim"
+    source:
+        url: "/categories/get_allcategories"
+        data:
+            provider_id: $("#provider_id").val()
+        cache: false
+    onPostInit: -&gt;
+        $.map @getSelectedNodes(), (node) -&gt;
+            node.makeVisible()
+            return 
+        return
+    select: (e, data) -&gt;
+        selKeys = $.map(data.tree.getSelectedNodes(), (node) -&gt;
+            node.key
+        )
+        $("#echoSelection3").text selKeys.join(", ")
+        selRootNodes = data.tree.getSelectedNodes(true)
+        selRootKeys = $.map(selRootNodes, (node) -&gt;
+            node.key
+        )
+        $("#echoSelectionRootKeys3").text selRootKeys.join(", ")
+        return
+    click: (event, data) -&gt;
+        node = data.node
+        tt = $.ui.fancytree.getEventTargetType(event.originalEvent)
+        if tt is "checkbox"
+            data.node.toggleExpanded()
+            c1 = data.node.getChildren()
+            if c1 != null
+                $.each c1, (index, v1) -&gt;
+                    v1.toggleExpanded()
+                    c2 = v1.getChildren()
+                    if c2 != null
+                        $.each c2, (index, v2) -&gt;
+                            v2.toggleExpanded()
+                            c3 = v2.getChildren()
+                            if c3 != null
+                                $.each c3, (index, v3) -&gt;
+                                    v3.toggleExpanded()
+                                    c4 = v3.getChildren()
+                                    if c4 != null
+                                        $.each c4, (index, v4) -&gt;
+                                            v4.toggleExpanded()
+                                    else
+                                        if v3.extraClasses is "fancytree-unselected"
+                                             v3.extraClasses = ""
+                                        else
+                                            v3.extraClasses = "fancytree-selected"
+                                    return
+                            else
+                                if v2.extraClasses is "fancytree-unselected"
+                                     v2.extraClasses = ""
+                                else
+                                    v2.extraClasses = "fancytree-error"
+                            return
+                    else
+                        if v1.extraClasses is "fancytree-selected"
+                             v1.extraClasses = ""
+                        else
+                            v1.extraClasses = "fancytree-error"
+                    return
+            else
+                if data.node.extraClasses is "fancytree-selected"
+                     data.node.extraClasses = ""
+                else
+                    data.node.extraClasses = "fancytree-selected"
+            return
+
+rootnode = undefined
+tree = $("#tree").fancytree("getTree")
+$("input[name=search]").keyup((e) -&gt;
+    n = undefined
+    leavesOnly = $("#leavesOnly").is(":checked")
+    match = $(this).val()
+    if e and e.which is $.ui.keyCode.ESCAPE or $.trim(match) is ""
+        $("button#btnResetSearch").click()
+        return
+    if $("#regex").is(":checked")
+        n = tree.filterNodes((node) -&gt;
+            new RegExp(match, "i").test node.title
+        , leavesOnly)
+    else
+        n = tree.filterNodes(match, leavesOnly) 
+    $("button#btnResetSearch").attr "disabled", false
+    $("span#matches").text "(" + n + " eşleşme bulundu)"
+    return false
+).focus()
+$("button#btnResetSearch").click((e) -&gt;
+    $("input[name=search]").val ""
+    $("span#matches").text ""
+    tree.clearFilter()
+    return false
+).attr "disabled", true
+$("input#hideMode").change((e) -&gt;
+    tree.options.filter.mode = (if $(this).is(":checked") then "hide" else "dimm")
+    tree.clearFilter()
+    $("input[name=search]").keyup()
+    return
+).prop "checked", true
+$("input#leavesOnly").change (e) -&gt;
+
+    # tree.options.filter.leavesOnly = $(this).is(":checked");
+    tree.clearFilter()
+    $("input[name=search]").keyup()
+    return
+
+$("input#regex").change (e) -&gt;
+    tree.clearFilter()
+    $("input[name=search]").keyup()
+    return
+</code></pre>
+
+<p>```</p>
+
+<p>controller to feed JSON data</p>
+
+<p>``` ruby categories_controller</p>
+
+<p>  def get_allcategories</p>
+
+<pre><code>provider = Provider.find(params[:provider_id])
+categories =  Category.all.to_a.map {|c| c}
+data = Category.list_provider_categories(provider,categories)
+respond_to do |format|
+  format.json  {render :json =&gt; data}
+end 
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>JSON list of categories with provider&rsquo;s categories selected</p>
+
+<p>``` ruby category_spec.rb</p>
+
+<pre><code>describe Category do 
+    let(:variation) { Fabricate(:variation) }
+  let(:provider)  { Fabricate(:price, variation_id: variation._id).workdone.provider }
+  let(:categories) { provider.get_categories(true)} 
+
+     describe "#list_provider_categories" do 
+    it "should return list of all categories" do
+      result = provider.list_provider_categories(provider,categories)
+      expect(result).not_to be(nil)
+    end 
+
+    it "should mark provider's categories" do
+      result = provider.list_provider_categories(provider,categories)
+      expect(JSON.parse(result)[:selected]).not_to be(nil)
+    end  
+
+  end 
+end
+</code></pre>
+
+<p>```</p>
+
+<p>``` ruby category.rb</p>
+
+<p>  def self.list_provider_categories(provider,categories)</p>
+
+<pre><code>variation_ids,category_ids,related_categories = [],[],[] 
+if provider.present?
+  variation_ids = provider.workdones.map{|w| w.prices.map{|p| p.variation_id if p.active == true}}.reduce(:+)
+  category_ids = provider.workdones.where(:"prices.active"=&gt;true).map(&amp;:category_id).uniq
+  related_categories = self.find_parent_related(category_ids)
+end
+grand_parents = categories.map {|a| a.ancestors[1] } &amp; categories.map {|a| a.ancestors[1] }.compact
+parents = categories.map {|a| a.ancestors[2] } &amp; categories.map {|a| a.ancestors[2] }.compact
+childrens = categories.map {|a| a.ancestors[3] } &amp; categories.map {|a| a.ancestors[3] }.compact
+babies = categories.map {|a| a.title}.compact
+data = Jbuilder.encode do |json|
+  json.array! grand_parents.each do |grand_parent|
+    gp_id = Category.find_by(:title=&gt;grand_parent)._id
+    json.title grand_parent
+    json.key gp_id
+    json.folder true
+    if related_categories.include? gp_id
+      json.expanded true
+    end
+    json.children  Category.where(:parent=&gt;grand_parent, :title.in=&gt;parents).to_a do |parent|
+      json.title parent.title
+      json.key parent._id
+      json.folder true 
+      if related_categories.include? parent._id
+        json.expanded true
+      end
+      json.children  Category.where(:parent=&gt;parent.title, :title.in=&gt;childrens).to_a do |child|
+        json.title child.title
+        json.key child._id
+        json.folder true
+        if related_categories.include? child._id
+          json.expanded true
+        end
+        json.children  Category.where(:parent=&gt;child.title, :title.in=&gt;babies).to_a do |baby|
+          variations = baby.business_function.variations 
+          json.title baby.title
+          json.key baby._id
+          json.folder true 
+          if category_ids.include? baby._id
+            json.expanded true
+          end
+          json.children variations do |variation| 
+            json.key variation._id
+            json.title baby.title + " - " + variation.variation
+            if variation_ids.include? variation._id
+              json.selected true
+              json.extraClasses "fancytree-selected"
+              json.expanded true
+            else
+              json.selected false                  
+            end
+          end
+        end
+      end
+    end
+  end
+end 
+return data 
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>The logic to update categories</p>
+
+<p>``` ruby provider.rb</p>
+
+<p>  def assign_workdones(categories)</p>
+
+<pre><code>selected_variations = ApplicationController.helpers.selected_variations(categories) 
+active_variations = []
+inactive_variations = []
+if self.workdones.blank?
+   self.assign_new_workdone(selected_variations)
+else
+  active_variations = self.workdones.map{|w| w.prices.map{|p| p.variation_id if p.active == true}}.reduce(:+)
+  inactive_variations = self.workdones.map{|w| w.prices.map{|p| p.variation_id if p.active == false}}.reduce(:+)
+  variations_to_deactivate = (active_variations + inactive_variations) - selected_variations  
+  self.workdones.map{|w| w.prices.map{|p| p.update_attribute(:active, false) if variations_to_deactivate.include?(p.variation_id)}}
+  selected_variations.each do |var| 
+    if !active_variations.include?(var) &amp;&amp;  !inactive_variations.include?(var) 
+      self.assign_new_workdone([var])
+    elsif !active_variations.include?(var) &amp;&amp; inactive_variations.include?(var) 
+      price = self.workdones.where(:"prices.variation_id"=&gt; var)
+      price.to_a[0].update_attribute(:active, true)
+    else
+    end
+  end
+end 
+</code></pre>
+
+<p>  end</p>
+
+<p>```
+tests for assigning workdones</p>
+
+<p>``` ruby provider_spec.rb</p>
+
+<p>  describe &ldquo;#assign_workdones&rdquo; do</p>
+
+<pre><code>let(:new_categories) { 2.times.map { Fabricate(:variation).business_function.category._id } }  
+
+context "assigned categories include current categories and more categories" do 
+  let(:max_categories) { 25.times.map { Fabricate(:variation).business_function.category._id } } 
+  let (:result) { new_categories + current_categories}
+  let (:max_result) { max_categories + current_categories}
+
+  it "should create active workdones from new categories" do
+    initial_workdone_count = provider.workdones.count
+    provider.assign_workdones(result)
+    expect(provider.workdones.count).to be(3) 
+    expect(provider.workdones.where(:active=&gt;true).count).to be(3)
+  end 
+end
+
+context "assigned categories does not include the current categories" do 
+  let (:result) { new_categories}
+
+  it "should deactivate the categories that are not in the result array" do
+    provider.assign_workdones(result)
+    expect(provider.workdones.count).to be(3) 
+    expect(provider.workdones.where(:active=&gt;false).count).to be(1)
+  end
+
+end 
+
+
+context "assigned categories include inactive workdones" do    
+  let (:array_to_assign) { new_categories } 
+
+  it "should activate the inactive workdones" do
+    provider.workdones.first.update_attribute(:active, false)
+    provider.assign_workdones(array_to_assign)
+    provider.assign_workdones(current_categories)
+    expect(provider.workdones.where(:active=&gt;true).count).to be(2)
+    expect(provider.workdones.where(:active=&gt;false).count).to be(1)
+  end 
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>```</p>
+
+<p>helper method to parse categories</p>
+
+<p>``` ruby providers_helper.rb</p>
+
+<p>  def selected_variations(categories)
+   all_variations = categories[&ldquo;children&rdquo;].map{|c| c[&ldquo;children&rdquo;].map{|c| c[&ldquo;children&rdquo;].map{|c| c[&ldquo;children&rdquo;].map{|c| c[&ldquo;children&rdquo;]}}}}.reduce(:+).reduce(:+).reduce(:+).compact.reduce(:+)
+   selected_variations = all_variations.map{|c| Moped::BSON::ObjectId.from_string(c[&ldquo;key&rdquo;]) if c[&ldquo;selected&rdquo;] == true}.compact
+   return selected_variations
+  end</p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

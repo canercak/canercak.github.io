@@ -115,9 +115,22 @@ would check all the child nodes. Then bumped to Fancy tree which was exceptional
 
 <p>Here is the result</p>
 
+<p><img src="http://dl.dropbox.com/u/47336405/Selection_002.png"></p>
+
 <p>And here is how I used it:</p>
 
-<p>How I used FancyTree</p>
+<p>For embedding fancytree goto <a href="https://github.com/mar10/fancytree/wiki">https://github.com/mar10/fancytree/wiki</a></p>
+
+<figure class='code'><figcaption><span>application.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%link</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;fancytree/skin-win8/ui.fancytree.min.css&quot;</span><span class="p">,</span> <span class="ss">rel</span><span class="p">:</span> <span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;text/css&quot;</span><span class="p">}/</span>
+</span><span class='line'><span class="nt">%script</span><span class="p">{</span><span class="ss">src</span><span class="p">:</span> <span class="s2">&quot;fancytree/jquery.fancytree-all.min.js&quot;</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;text/javascript&quot;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Basically you have include js and css. I included them in my assets tree so that code doesn&rsquo;t apply to me.
+Here is how I used FancyTree. It has checkbox and filtering functionality. Highlighting and selection part
+is unique to my needs.</p>
 
 <figure class='code'><figcaption><span>provider.js.coffee</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -757,6 +770,12 @@ would check all the child nodes. Then bumped to Fancy tree which was exceptional
 
 <time datetime="2014-07-18T23:36:40+03:00" pubdate data-updated="true">Jul 18<sup>th</sup>, 2014</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/fancytree-dot-js/'>fancytree.js</a>
+  
+</span>
 
 
     </p>
