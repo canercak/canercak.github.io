@@ -4,7 +4,7 @@
   <title><![CDATA[Category: fancytree.js | Caner's Ruby on rails blog]]></title>
   <link href="http://canercak.github.io/blog/categories/fancytree-dot-js/atom.xml" rel="self"/>
   <link href="http://canercak.github.io/"/>
-  <updated>2014-07-21T01:13:34+03:00</updated>
+  <updated>2014-07-24T21:40:55+03:00</updated>
   <id>http://canercak.github.io/</id>
   <author>
     <name><![CDATA[Caner Cakmak]]></name>
@@ -56,10 +56,6 @@ I understood that it&rsquo;s was exceptionally well-done. I now have great respe
 <p>Basically you have include the actual js and css. If you use bootstrap include the glyph extension too.
 Here is how I used FancyTree. It has checkbox and filtering functionality with highlighting and selection
 unique to my taste.</p>
-
-<p>You can also see some parts that contradict the DRY principle &ndash; sorry but this was the first version to see
-things are working and I felt the urge to post it. I usually write the code with simple tests first to see things working,
-then refactor the it with better tests and DRY everything before production. So change things as you want.</p>
 
 <p>``` coffeescript provider.js.coffee</p>
 
@@ -121,36 +117,7 @@ then refactor the it with better tests and DRY everything before production. So 
             if c1 != null
                 $.each c1, (index, v1) -&gt;
                     v1.toggleExpanded()
-                    c2 = v1.getChildren()
-                    if c2 != null
-                        $.each c2, (index, v2) -&gt;
-                            v2.toggleExpanded()
-                            c3 = v2.getChildren()
-                            if c3 != null
-                                $.each c3, (index, v3) -&gt;
-                                    v3.toggleExpanded()
-                                    c4 = v3.getChildren()
-                                    if c4 != null
-                                        $.each c4, (index, v4) -&gt;
-                                            v4.toggleExpanded()
-                                    else
-                                        if v3.extraClasses is "fancytree-selected"
-                                             v3.extraClasses = ""
-                                        else
-                                            v3.extraClasses = "fancytree-selected"
-                                    return
-                            else
-                                if v2.extraClasses is "fancytree-selected"
-                                     v2.extraClasses = ""
-                                else
-                                    v2.extraClasses = "fancytree-selected"
-                            return
-                    else
-                        if v1.extraClasses is "fancytree-selected"
-                             v1.extraClasses = ""
-                        else
-                            v1.extraClasses = "fancytree-selected"
-                    return
+                    c2 = v1.getChildren() 
             else
                 if data.node.extraClasses is "fancytree-selected"
                      data.node.extraClasses = ""

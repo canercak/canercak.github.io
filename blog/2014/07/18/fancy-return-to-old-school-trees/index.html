@@ -131,10 +131,6 @@ I understood that it&rsquo;s was exceptionally well-done. I now have great respe
 Here is how I used FancyTree. It has checkbox and filtering functionality with highlighting and selection
 unique to my taste.</p>
 
-<p>You can also see some parts that contradict the DRY principle &ndash; sorry but this was the first version to see
-things are working and I felt the urge to post it. I usually write the code with simple tests first to see things working,
-then refactor the it with better tests and DRY everything before production. So change things as you want.</p>
-
 <figure class='code'><figcaption><span>provider.js.coffee</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -243,35 +239,6 @@ then refactor the it with better tests and DRY everything before production. So 
 <span class='line-number'>106</span>
 <span class='line-number'>107</span>
 <span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
 </pre></td><td class='code'><pre><code class='coffeescript'><span class='line'> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">tree&quot;</span><span class="p">).</span><span class="nx">fancytree</span>
 </span><span class='line'>      <span class="nv">activeVisible: </span><span class="kc">true</span>
 </span><span class='line'>      <span class="nv">aria: </span><span class="kc">false</span>
@@ -331,35 +298,6 @@ then refactor the it with better tests and DRY everything before production. So 
 </span><span class='line'>                  <span class="nx">$</span><span class="p">.</span><span class="nx">each</span> <span class="nx">c1</span><span class="p">,</span> <span class="nf">(index, v1) -&gt;</span>
 </span><span class='line'>                      <span class="nx">v1</span><span class="p">.</span><span class="nx">toggleExpanded</span><span class="p">()</span>
 </span><span class='line'>                      <span class="nv">c2 = </span><span class="nx">v1</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-</span><span class='line'>                      <span class="k">if</span> <span class="nx">c2</span> <span class="o">!=</span> <span class="kc">null</span>
-</span><span class='line'>                          <span class="nx">$</span><span class="p">.</span><span class="nx">each</span> <span class="nx">c2</span><span class="p">,</span> <span class="nf">(index, v2) -&gt;</span>
-</span><span class='line'>                              <span class="nx">v2</span><span class="p">.</span><span class="nx">toggleExpanded</span><span class="p">()</span>
-</span><span class='line'>                              <span class="nv">c3 = </span><span class="nx">v2</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-</span><span class='line'>                              <span class="k">if</span> <span class="nx">c3</span> <span class="o">!=</span> <span class="kc">null</span>
-</span><span class='line'>                                  <span class="nx">$</span><span class="p">.</span><span class="nx">each</span> <span class="nx">c3</span><span class="p">,</span> <span class="nf">(index, v3) -&gt;</span>
-</span><span class='line'>                                      <span class="nx">v3</span><span class="p">.</span><span class="nx">toggleExpanded</span><span class="p">()</span>
-</span><span class='line'>                                      <span class="nv">c4 = </span><span class="nx">v3</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-</span><span class='line'>                                      <span class="k">if</span> <span class="nx">c4</span> <span class="o">!=</span> <span class="kc">null</span>
-</span><span class='line'>                                          <span class="nx">$</span><span class="p">.</span><span class="nx">each</span> <span class="nx">c4</span><span class="p">,</span> <span class="nf">(index, v4) -&gt;</span>
-</span><span class='line'>                                              <span class="nx">v4</span><span class="p">.</span><span class="nx">toggleExpanded</span><span class="p">()</span>
-</span><span class='line'>                                      <span class="k">else</span>
-</span><span class='line'>                                          <span class="k">if</span> <span class="nx">v3</span><span class="p">.</span><span class="nx">extraClasses</span> <span class="o">is</span> <span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                                               <span class="nv">v3.extraClasses = </span><span class="s">&quot;&quot;</span>
-</span><span class='line'>                                          <span class="k">else</span>
-</span><span class='line'>                                              <span class="nv">v3.extraClasses = </span><span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                                      <span class="k">return</span>
-</span><span class='line'>                              <span class="k">else</span>
-</span><span class='line'>                                  <span class="k">if</span> <span class="nx">v2</span><span class="p">.</span><span class="nx">extraClasses</span> <span class="o">is</span> <span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                                       <span class="nv">v2.extraClasses = </span><span class="s">&quot;&quot;</span>
-</span><span class='line'>                                  <span class="k">else</span>
-</span><span class='line'>                                      <span class="nv">v2.extraClasses = </span><span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                              <span class="k">return</span>
-</span><span class='line'>                      <span class="k">else</span>
-</span><span class='line'>                          <span class="k">if</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">extraClasses</span> <span class="o">is</span> <span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                               <span class="nv">v1.extraClasses = </span><span class="s">&quot;&quot;</span>
-</span><span class='line'>                          <span class="k">else</span>
-</span><span class='line'>                              <span class="nv">v1.extraClasses = </span><span class="s">&quot;fancytree-selected&quot;</span>
-</span><span class='line'>                      <span class="k">return</span>
 </span><span class='line'>              <span class="k">else</span>
 </span><span class='line'>                  <span class="k">if</span> <span class="nx">data</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">extraClasses</span> <span class="o">is</span> <span class="s">&quot;fancytree-selected&quot;</span>
 </span><span class='line'>                       <span class="nv">data.node.extraClasses = </span><span class="s">&quot;&quot;</span>
